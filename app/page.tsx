@@ -14,6 +14,8 @@ import { BsTelegram } from "react-icons/bs";
 import { FaSteam } from "react-icons/fa6";
 import { PiXLogo } from "react-icons/pi";
 import { BiLogoHtml5, BiLogoJava, BiLogoPython, BiLogoTailwindCss, BiLogoTypescript } from "react-icons/bi";
+import { mojang } from "@/lib/font";
+import { log } from "node:util";
 
 export default function Home (): JSX.Element
 {
@@ -179,6 +181,39 @@ export default function Home (): JSX.Element
         </Card>
       </div>
       <Card className="sm:w-full max-sm:h-full">
+        <div className="inline-flex flex-col space-y-1">
+          <p className={cn(
+            "text-lg font-bold text-indigo-500",
+            mojang.className
+          )}>
+            Friendly survival server:
+          </p>
+          <div className="inline-flex flex-row items-center space-x-1">
+            <input
+              value="mc.j3rzy.dev"
+              readOnly
+              className={cn(
+                "focus-visible:outline-none p-2 text-lg text-white bg-black border-2 border-white",
+                mojang.className
+              )}
+              style={{
+                textShadow: "2px 2px #4C4C4C"
+              }}
+              onClick={(e) =>
+              {
+                if ( navigator.clipboard ) navigator.clipboard.writeText("mc.j3rzy.dev").then(() => console.log("Copied to clipboard!"))
+              }}
+            />
+            <button
+              className={cn(
+                "minecraft-btn mx-auto w-32 text-center text-white truncate p-1 border-2 border-b-4 hover:text-yellow-200",
+                mojang.className
+              )}
+            >
+              Copy
+            </button>
+          </div>
+        </div>
       </Card>
     </main>
   )
