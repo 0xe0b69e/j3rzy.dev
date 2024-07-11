@@ -18,9 +18,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://j3rzy.dev/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "j3rzy.dev",
+        width: 900,
+        height: 900,
+        alt: "Great art by @sweirde on Twitter!",
       },
     ],
   }
