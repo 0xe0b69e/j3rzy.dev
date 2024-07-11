@@ -16,6 +16,7 @@ export default function SMButton ({ color, name, link, className, style, logo }:
 {
   return (
     <Link
+      target="_blank"
       href={link ?? ""}
       className={cn(
         "flex sm:flex-row flex-col sm:w-full max-sm:h-full sm:items-center max-sm:justify-center sm:p-1 p-4 rounded-md sm:space-x-2 max-sm:space-y-3 text-white shadow-sm",

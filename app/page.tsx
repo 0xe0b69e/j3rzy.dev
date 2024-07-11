@@ -18,6 +18,7 @@ import { BiLogoHtml5, BiLogoJava, BiLogoPython, BiLogoTailwindCss, BiLogoTypescr
 export default function Home (): JSX.Element
 {
   const [ loaded, setLoaded ] = React.useState<boolean>(false);
+  const [ finished, setFinished ] = React.useState<boolean>(false);
   const [ username, setUsername ] = React.useState<string>(fallbackDiscordData.username);
   const [ avatar, setAvatar ] = React.useState<string>(fallbackDiscordData.avatar);
   const [ globalName, setGlobalName ] = React.useState<string | null>(fallbackDiscordData.global_name);
@@ -31,6 +32,7 @@ export default function Home (): JSX.Element
       if ( data.avatar ) setAvatar(data.avatar);
       setGlobalName(data.global_name);
     });
+    setTimeout(() => setFinished(true), 1000);
   }, []);
   
   return (
@@ -39,15 +41,18 @@ export default function Home (): JSX.Element
       "flex justify-center max-sm:space-y-3 sm:space-x-5 p-3 sm:p-5 sm:flex-row flex-col",
     )}>
       <div className="grid grid-cols-1 max-sm:space-y-3 sm:space-y-5">
-        <Card className="p-3 flex sm:flex-col flex-row max-sm:items-center max-sm:space-x-2 max-xs:flex-col sm:h-full sm:justify-center">
+        <Card
+          className="p-3 flex sm:flex-col flex-row max-sm:items-center max-sm:space-x-2 max-xs:flex-col sm:h-full sm:justify-center">
           <Image
             src={avatar}
             alt={`${username}'s avatar`}
             width={200}
             height={200}
             className={cn(
-              "transition-all rounded-full hover:shadow-lg"
+              "transition-all rounded-full hover:shadow-lg duration-300 ease-in-out",
+              !loaded && "rotate-45"
             )}
+            style={finished ? ({}) : ({ transitionDelay: "0.5s" })}
           />
           <div className="w-full flex flex-col -space-y-2">
             <p
@@ -61,69 +66,119 @@ export default function Home (): JSX.Element
           <SMButton
             color="#E44D26"
             name="HTML"
-            logo={<BiLogoHtml5 />}
+            logo={<BiLogoHtml5/>}
             className={cn(
-              !loaded && "-translate-x-20",
+              !loaded && "-translate-x-20 opacity-0",
               "transition-all duration-300 ease-in-out"
             )}
+            style={finished ? ({}) : ({ transitionDelay: "0.1s" })}
           />
           <SMButton
             color="#38bdf8"
             name="CSS (Tailwind)"
-            logo={<BiLogoTailwindCss />}
+            logo={<BiLogoTailwindCss/>}
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.3s" })}
           />
           <SMButton
             color="#3178c6"
             name="TypeScript"
-            logo={<BiLogoTypescript />}
+            logo={<BiLogoTypescript/>}
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.5s" })}
           />
           <SMButton
             color="#5382a1"
             name="Java"
-            logo={<BiLogoJava />}
+            logo={<BiLogoJava/>}
+            
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.7s" })}
           />
           <SMButton
             color="#306998"
             name="Python"
-            logo={<BiLogoPython />}
+            logo={<BiLogoPython/>}
+            
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.9s" })}
           />
         </Card>
         <Card className="flex sm:flex-col flex-row sm:space-y-2 max-sm:space-x-2 items-center justify-center">
           <h5 className="max-sm:vertical-lr">Social Media</h5>
           <SMButton
-            color="#000000"
-            name="GitHub"
-            link="https://github.com/0xe0b69e"
-            logo={<GitHubLogoIcon/>}
-          />
-          <SMButton
             color="#5865F2"
             name="Discord"
             link="https://discord.com/users/719890634294427669"
             logo={<IoLogoDiscord/>}
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.2s" })}
+          />
+          <SMButton
+            color="#000000"
+            name="GitHub"
+            link="https://github.com/0xe0b69e"
+            logo={<GitHubLogoIcon/>}
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.4s" })}
           />
           <SMButton
             color="#000000"
             name="X"
             link="https://x.com/0xe0b69e"
             logo={<PiXLogo/>}
+            
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.6s" })}
           />
           <SMButton
             color="#49a9e9"
             name="Telegram"
             link="https://t.me/e0b69e"
             logo={<BsTelegram/>}
+            
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "0.8s" })}
           />
           <SMButton
             color="#000000"
             name="Steam"
             link="https://steamcommunity.com/id/0xe0b69e"
             logo={<FaSteam/>}
+            
+            className={cn(
+              !loaded && "-translate-x-20 opacity-0",
+              "transition-all duration-300 ease-in-out"
+            )}
+            style={finished ? ({}) : ({ transitionDelay: "1s" })}
           />
         </Card>
       </div>
       <Card className="sm:w-full max-sm:h-full">
-        <h1>two</h1>
       </Card>
     </main>
   )
