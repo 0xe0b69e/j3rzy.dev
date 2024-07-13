@@ -46,7 +46,7 @@ export default function Home (): JSX.Element
   
   return (
     <main className={cn(
-      "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 w-full h-full",
+      "bg-gradient-to-br bg-cover bg-center from-indigo-500 via-purple-500 to-pink-500 w-full h-full min-h-screen min-w-screen",
       "flex justify-center max-sm:space-y-3 sm:space-x-5 p-3 sm:p-5 sm:flex-row flex-col",
     )}>
       <div className="grid grid-cols-1 max-sm:space-y-3 sm:space-y-5">
