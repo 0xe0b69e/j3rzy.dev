@@ -47,7 +47,8 @@ export default function Home (): JSX.Element
   
   return (
     <main className={cn(
-      "bg-gradient-to-br bg-cover bg-center from-indigo-500 via-purple-500 to-pink-500 w-full h-full min-h-screen min-w-screen",
+      "w-full h-full min-h-screen min-w-screen",
+      "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-800 dark:via-purple-800 dark:to-pink-800 text-black dark:text-white",
       "flex justify-center max-sm:space-y-3 sm:space-x-5 p-3 sm:p-5 sm:flex-row flex-col",
     )}>
       <div className="grid max-sm:space-y-3 sm:space-y-5">
@@ -66,9 +67,9 @@ export default function Home (): JSX.Element
           />
           <div className="w-full flex flex-col -space-y-2">
             <p
-              className="sm:text-center max-xs:text-center text-black text-2xl max-sm:text-4xl max-xs:text-2xl">{globalName}</p>
+              className="sm:text-center max-xs:text-center text-2xl max-sm:text-4xl max-xs:text-2xl">{globalName}</p>
             <p
-              className="sm:text-center max-xs:text-center text-black/50 text-lg max-sm:text-3xl max-xs:text-lg">{`@${username}`}</p>
+              className="sm:text-center max-xs:text-center text-black/50 dark:text-white/50 text-lg max-sm:text-3xl max-xs:text-lg">{`@${username}`}</p>
           </div>
         </Card>
         <Card className="flex flex-col space-y-2 items-center justify-center">

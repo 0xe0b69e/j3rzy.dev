@@ -12,7 +12,7 @@ export default function Card ({
   return (
     <div
       className={cn(
-        "backdrop-filter bg-white/40 backdrop-blur-lg shadow-sm rounded-lg p-1 border-2 border-white/10",
+        "backdrop-filter bg-white/40 dark:bg-black/40 backdrop-blur-lg shadow-sm rounded-lg p-1 border-2 border-white/10 dark:border-black/10",
         className
       )}
       {...props}
