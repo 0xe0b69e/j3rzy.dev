@@ -30,9 +30,7 @@ export default function RootLayout ({ children }: Readonly<{ children: React.Rea
 {
   return (
     <html lang="en">
-    <body className={cn(
-      varelaRound.className
-    )}>{children}</body>
+    <body className={varelaRound.className}>{children}</body>
     </html>
   );
 }
