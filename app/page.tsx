@@ -49,7 +49,7 @@ export default function Home (): JSX.Element
       "bg-gradient-to-br bg-cover bg-center from-indigo-500 via-purple-500 to-pink-500 w-full h-full min-h-screen min-w-screen",
       "flex justify-center max-sm:space-y-3 sm:space-x-5 p-3 sm:p-5 sm:flex-row flex-col",
     )}>
-      <div className="grid grid-cols-1 max-sm:space-y-3 sm:space-y-5">
+      <div className="grid max-sm:space-y-3 sm:space-y-5">
         <Card
           className="p-3 flex sm:flex-col flex-row max-sm:items-center max-sm:space-x-2 max-xs:flex-col sm:h-full sm:justify-center">
           <Image
