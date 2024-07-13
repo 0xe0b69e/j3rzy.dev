@@ -23,6 +23,7 @@ import {
   BiLogoTypescript
 } from "react-icons/bi";
 import { mojang } from "@/lib/font";
+import Footer from "@/components/Footer";
 
 export default function Home (): JSX.Element
 {

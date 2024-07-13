@@ -3,6 +3,7 @@ import "./globals.css";
 import React from "react";
 import { varelaRound } from "@/lib/font";
 import { cn } from "@/lib/utils";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "j3rzy.dev",
@@ -30,7 +31,10 @@ export default function RootLayout ({ children }: Readonly<{ children: React.Rea
 {
   return (
     <html lang="en">
-    <body className={varelaRound.className}>{children}</body>
+    <body className={varelaRound.className}>
+    {children}
+    <Footer />
+    </body>
     </html>
   );
 }
