@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import { varelaRound } from "@/lib/font";
-import { cn } from "@/lib/utils";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
