@@ -19,24 +19,17 @@ export default function SMButton ({ color, name, link, className, style, logo }:
   /**
   Alternative to
   ```typescript
-  if (link)
-  {
+  if (link) {
     return (
-    <Link
-      ...
-    >
-      ...
-    </Link>
+      <Link ... >
+        ...
+      </Link>
     )
-  }
-  else
-  {
+  } else {
     return (
-    <div
-      ...
-    >
-      ...
-    </div>
+      <div ... >
+        ...
+      </div>
     )
   }
   ```
