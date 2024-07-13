@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import Card from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { fallbackDiscordData } from "@/lib/fallbackData";
@@ -41,6 +41,10 @@ export default function Home (): JSX.Element
       setGlobalName(data.global_name);
     });
     setTimeout(() => setFinished(true), 1100);
+  }, []);
+  
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText("mc.j3rzy.dev").then(r => console.log("Copied!"));
   }, []);
   
   return (
@@ -231,16 +235,13 @@ export default function Home (): JSX.Element
               style={{
                 textShadow: "2px 2px #4C4C4C"
               }}
-              onClick={(e) =>
-              {
-                if ( navigator.clipboard ) navigator.clipboard.writeText("mc.j3rzy.dev").then(() => console.log("Copied to clipboard!"))
-              }}
             />
             <button
               className={cn(
                 "minecraft-btn mx-auto sm:w-32 w-full text-center text-white truncate p-1 border-2 border-b-4 hover:text-yellow-200",
                 mojang.className
               )}
+              onClick={handleCopy}
             >
               Copy
             </button>
