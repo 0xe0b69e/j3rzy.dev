@@ -1,5 +1,4 @@
-import React, { ClassAttributes, ReactElement } from "react";
-import Link from "next/link";
+import React, { ReactElement } from "react";
 import { cn, darkenHexColor, isBlack } from "@/lib/utils";
 
 interface SMButtonProps

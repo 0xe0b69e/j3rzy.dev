@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const cn: (...inputs: ClassValue[]) => string = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -19,9 +19,9 @@ export function darkenHexColor (hex: string, darkenAmount: number = 16): string
   g = Math.max(0, g - darkenAmount);
   b = Math.max(0, b - darkenAmount);
   
-  const rHex: string = r.toString(16).padStart(2, '0');
-  const gHex: string = g.toString(16).padStart(2, '0');
-  const bHex: string = b.toString(16).padStart(2, '0');
+  const rHex: string = r.toString(16).padStart(2, "0");
+  const gHex: string = g.toString(16).padStart(2, "0");
+  const bHex: string = b.toString(16).padStart(2, "0");
   
   return `#${rHex}${gHex}${bHex}`;
 }
