@@ -14,7 +14,7 @@ interface SMButtonProps
 
 export default function SMButton ({ color, name, link, className, style, logo }: SMButtonProps): JSX.Element
 {
-  const getMultiplier = (): number => isBlack(color) ? -1 : 1;
+  const getMultiplier = (): number => isBlack(color) ? -0.75 : 1.5;
   
   /**
   Alternative to
@@ -41,7 +41,7 @@ export default function SMButton ({ color, name, link, className, style, logo }:
       link && "hover:-translate-x-1 hover:-translate-y-1 transition-transform duration-300 ease-in-out hover:shadow-2xl",
       className
     ),
-    style: { backgroundImage: `linear-gradient(to bottom right, ${color}, ${darkenHexColor(color, 0x28 * getMultiplier())})`, ...style },
+    style: { backgroundImage: `linear-gradient(to bottom, ${color}, ${darkenHexColor(color, 0x28 * getMultiplier())})`, ...style },
     ...(link ? { target: "_blank", href: link } : {})
   }
   
