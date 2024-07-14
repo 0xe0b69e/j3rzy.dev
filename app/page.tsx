@@ -74,7 +74,7 @@ export default function Home (): JSX.Element
               className="sm:text-center max-xs:text-center text-black/50 dark:text-white/50 text-lg max-sm:text-3xl max-xs:text-lg">{`@${username}`}</p>
           </div>
         </Card>
-        <Card className="flex flex-col space-y-2 items-center justify-center">
+        <Card className="flex flex-col space-y-2 items-center justify-center py-0">
           <h2>Technologies</h2>
           <div className="grid sm:grid-cols-1 xs:grid-cols-2 grid-cols-1 gap-2 w-full">
             <SMButton
@@ -152,7 +152,7 @@ export default function Home (): JSX.Element
             />
           </div>
         </Card>
-        <Card className="flex flex-col space-y-2 items-center justify-center">
+        <Card className="flex flex-col space-y-2 items-center justify-center py-0">
           <h2>Social Media</h2>
           <div className="grid sm:grid-cols-1 xs:grid-cols-2 grid-cols-1 gap-2 w-full">
             <SMButton
