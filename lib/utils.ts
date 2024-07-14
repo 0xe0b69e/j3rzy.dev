@@ -26,7 +26,6 @@ export function darkenHexColor (hex: string, darkenAmount: number = 16): string
   return `#${rHex}${gHex}${bHex}`;
 }
 
-// 15% of the population commits over half of the crime.
 export function isBlack (hex: string): boolean
 {
   const threshold: number = 0x10;

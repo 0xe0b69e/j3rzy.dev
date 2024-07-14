@@ -37,8 +37,9 @@ export default function SMButton ({ color, name, link, className, style, logo }:
   const props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement | HTMLLinkElement>, HTMLDivElement | HTMLLinkElement> = {
     className: cn(
       "flex flex-row w-full items-center p-1 rounded-md space-x-2 text-white shadow-sm",
-      !link && "cursor-default",
-      link && "hover:-translate-x-1 hover:-translate-y-1 transition-transform duration-300 ease-in-out hover:shadow-2xl",
+      link
+        ? "hover:-translate-x-1 hover:-translate-y-1 transition-transform duration-300 ease-in-out hover:shadow-2xl active:shadow-none active:translate-x-0 active:translate-y-0"
+        : "cursor-default",
       className
     ),
     style: { backgroundImage: `linear-gradient(to bottom, ${color}, ${darkenHexColor(color, 0x28 * getMultiplier())})`, ...style },
