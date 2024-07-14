@@ -1,34 +1,28 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { cn, formatBytes, formatDate } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import FileIcon from "@/components/files/FileIcon";
-import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { FileData } from "@/lib/definitions";
+import { getFiles } from "@/actions/files";
 
 export default function Files (): JSX.Element
 {
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
   const [ selectedFiles, setSelectedFiles ] = useState<string[]>([]);
+  const [ files, setFiles ] = useState<FileData[]>([]);
   
-  const popularFileExtensions = [
-    "html", "css", "js", "jsx", "ts", "tsx", "json", "java", "py", "cpp", "c", "cs", "php", "rb", "swift", "go", "rs", "kt", "lua",
-    "sh", "bat", "yaml", "yml", "xml", "sql", "md", "csv", "txt", "png", "jpg", "jpeg", "gif", "svg", "bmp", "mp3", "wav", "mp4",
-    "avi", "mov", "flv", "mkv", "webm", "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "zip", "rar", "7z", "tar", "gz", "bz2",
-    "exe", "iso", "img", "apk", "jar", "dll", "so", "properties", "gradle", "raw", "bin", "class", "war", "ear", "deb", "rpm", "dmg",
-    "app", "pkg", "ipa", "msi", "cab", "torrent", "key", "pem", "crt", "cer", "csr", "pfx", "jks", "keystore", "truststore", "pub",
-  ];
-  
-  const files = popularFileExtensions.map((ext, index) => ({
-    id: `gdkj${index}fhgdkjfh`,
-    name: `file-${index + 1}.${ext}`,
-    size: index * 1000,
-    uploader: "John Doe",
-    date: "2022-01-01"
-  }));
+  useEffect(() =>
+  {
+    const fetchFiles = async () => setFiles(await getFiles());
+    fetchFiles().then();
+  }, []);
   
   return (
     <div className="flex flex-col gap-2 p-2">
-      <div className="w-full flex justify-between px-4 space-x-5">
+      <div
+        className="w-full flex xxs:flex-row flex-col xxs:justify-between xxs:px-4 px-1 xxs:space-x-5 max-xxs:space-y-2">
         <div
           className={cn(
             "w-full rounded-full bg-surface dark:bg-surface-dark p-1 transition-all duration-150 flex flex-row items-center space-x-1",
@@ -64,49 +58,64 @@ export default function Files (): JSX.Element
               "inline-flex items-center justify-center p-2 rounded-full group",
               "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
             )}
-            title={`Delete ${selectedFiles.length} selected`}
+            title={`Delete selected`} // TODO: Write why it's disabled
             onClick={() =>
             {
               // TODO: Delete selected files
             }}
-            disabled
+            disabled={false /* TODO: Disable button if at least one selected file does not belong to user */}
           >
-            <TrashIcon className="group-disabled:text-black/50 group-disabled:dark:text-white/50" />
+            <TrashIcon className="group-disabled:text-black/50 group-disabled:dark:text-white/50"/>
           </button>
         </div>
-        <div className="h-10 w-28">
+        <div className="inline-flex flex-row space-x-2">
+          <div className="h-10 xxs:w-28 w-full">
+            <button
+              className={cn(
+                "w-1/2 h-full rounded-l-full border-[1px] inline-flex items-center justify-center transition-colors duration-150",
+                useGrid
+                  ? "bg-surface/75 dark:bg-surface-dark/75 hover:bg-surface hover:dark:bg-surface-dark border-surface dark:border-surface-dark"
+                  : "bg-secondary/25 border-secondary/50 hover:bg-secondary/35"
+              )}
+              onClick={() => setUseGrid(false)}
+              title="List layout"
+            >
+              <HamburgerMenuIcon/>
+            </button>
+            <button
+              className={cn(
+                "w-1/2 h-full rounded-r-full border-[1px] inline-flex items-center justify-center transition-colors duration-150",
+                useGrid
+                  ? "bg-secondary/25 border-secondary/50 hover:bg-secondary/35"
+                  : "bg-surface/75 dark:bg-surface-dark/75 hover:bg-surface hover:dark:bg-surface-dark border-surface dark:border-surface-dark"
+              )}
+              onClick={() => setUseGrid(true)}
+              title="Grid layout"
+            >
+              <GridIcon/>
+            </button>
+          </div>
           <button
             className={cn(
-              "w-1/2 h-full rounded-l-full border-[1px] inline-flex items-center justify-center transition-colors duration-150",
-              useGrid ? "bg-surface dark:bg-surface-dark border-surface dark:border-surface-dark" : "bg-secondary/25 border-secondary/50 hover:bg-secondary/35"
+              "w-10 h-10 rounded-full bg-surface/75 dark:bg-surface-dark/75 hover:bg-surface hover:dark:bg-surface-dark border-surface dark:border-surface-dark inline-flex",
+              "items-center justify-center p-2"
             )}
-            onClick={() => setUseGrid(false)}
-            title="List layout"
+            title="Upload file"
           >
-            <HamburgerMenuIcon/>
-          </button>
-          <button
-            className={cn(
-              "w-1/2 h-full rounded-r-full border-[1px] inline-flex items-center justify-center transition-colors duration-150",
-              useGrid ? "bg-secondary/25 border-secondary/50 hover:bg-secondary/35" : "bg-surface dark:bg-surface-dark border-surface dark:border-surface-dark"
-            )}
-            onClick={() => setUseGrid(true)}
-            title="Grid layout"
-          >
-            <GridIcon/>
+            <PlusIcon className="w-6 h-6"/>
           </button>
         </div>
       </div>
       <div
-        className="grid max-h-[calc(100vh-136px)] overflow-y-auto p-1 gap-2"
-        style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }) : ({})}
+        className="grid xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)] overflow-y-auto p-1 gap-2"
+        style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }) : ({})}
       >
         {files.map((file, index) => (
           <div
             key={index}
             className={cn(
               "grid rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
-              useGrid ? "items-center justify-center text-center grid-cols-1" : "text-left grid-cols-5",
+              useGrid ? "items-center justify-center text-center grid-cols-1" : "text-left xs:gap-2 gap-4 grid-cols-5 max-sm:grid-cols-4 max-xs:flex",
               selectedFiles.includes(file.id)
                 ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
                 : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
@@ -150,9 +159,10 @@ export default function Files (): JSX.Element
               />
             </div>
             <p className={cn(useGrid && "text-xl", "font-mono")}>{file.name}</p>
-            <p>{file.size}</p>
-            <p>{file.uploader}</p>
-            <p>{file.date}</p>
+            <p className={cn(!useGrid && "max-xs:hidden")}>{formatBytes(file.size)}</p>
+            {!useGrid && <span className="xs:hidden flex-grow"/>}
+            <p className={cn(!useGrid && "max-xs:text-right")}>{file.username}</p>
+            <p className={cn(!useGrid && "max-sm:hidden")}>{formatDate(file.createdAt)}</p>
           </div>
         ))}
       </div>

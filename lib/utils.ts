@@ -36,3 +36,29 @@ export function isBlack (hex: string): boolean
   
   return r < threshold && g < threshold && b < threshold;
 }
+
+export async function convertFileToBase64 (file: File): Promise<string>
+{
+  return new Promise((resolve, reject) =>
+  {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+export function formatBytes (bytes: number, decimals: number = 2): string
+{
+  if ( bytes === 0 ) return "0 Bytes";
+  
+  const k: number = 1024;
+  const dm: number = decimals < 0 ? 0 : decimals;
+  const sizes: string[] = [ "Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" ];
+  
+  const i: number = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
+
+export const formatDate = (date: Date): string => "";
