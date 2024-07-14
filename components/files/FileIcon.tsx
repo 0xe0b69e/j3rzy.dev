@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
-import { SiLua } from "react-icons/si";
+import { SiGradle, SiLua, SiUtorrent } from "react-icons/si";
 import { CiFileOn } from "react-icons/ci";
 import { LuFileJson } from "react-icons/lu";
 import {
+  PiCertificate,
   PiFileArchive,
   PiFileAudio, PiFileC, PiFileCpp, PiFileCSharp,
   PiFileCss, PiFileDoc,
@@ -13,10 +14,19 @@ import {
   PiFileTs,
   PiFileVideo
 } from "react-icons/pi";
-import { BsFiletypeExe, BsFiletypeJava, BsFiletypePhp, BsFiletypeRb } from "react-icons/bs";
+import {
+  BsFileBinary,
+  BsFiletypeExe,
+  BsFiletypeJava,
+  BsFiletypePhp,
+  BsFiletypeRaw,
+  BsFiletypeRb
+} from "react-icons/bs";
 import { TbBrandGolang, TbBrandKotlin, TbBrandSwift } from "react-icons/tb";
 import { VscTerminal } from "react-icons/vsc";
-import { FaRegFloppyDisk } from "react-icons/fa6";
+import { FaDebian, FaRedhat, FaRegFloppyDisk } from "react-icons/fa6";
+import { MdAndroid } from "react-icons/md";
+import { BiLibrary } from "react-icons/bi";
 
 interface FileIconProps
 {
@@ -36,6 +46,8 @@ export default function FileIcon ({ fileName, className = "" }: FileIconProps): 
     case "jpeg":
     case "gif":
       return <PiFileImage className={className}/>;
+    case "raw":
+      return <BsFiletypeRaw className={className}/>;
     case "mp3":
     case "wav":
     case "ogg":
@@ -61,8 +73,6 @@ export default function FileIcon ({ fileName, className = "" }: FileIconProps): 
     case "xlsx":
       return <PiFileDoc className={className}/>;
     // Code files
-    case "exe":
-      return <BsFiletypeExe className={className}/>;
     case "js":
     case "jsx":
       return <PiFileJs className={className}/>;
@@ -77,6 +87,10 @@ export default function FileIcon ({ fileName, className = "" }: FileIconProps): 
     case "conf":
     case "cfg":
     case "json":
+    case "jsonc":
+    case "json5":
+    case "jsonld":
+    case "properties":
       return <LuFileJson className={className}/>;
     case "html":
     case "htm":
@@ -116,6 +130,8 @@ export default function FileIcon ({ fileName, className = "" }: FileIconProps): 
       return <PiFileSql className={className}/>;
     case "md":
       return <PiFileMd className={className}/>;
+    case "gradle":
+      return <SiGradle className={className}/>;
     // Archive files
     case "zip":
     case "rar":
@@ -126,8 +142,45 @@ export default function FileIcon ({ fileName, className = "" }: FileIconProps): 
       return <PiFileArchive className={className}/>;
     case "iso":
     case "img":
+    case "dmg":
+    case "pkg":
       return <FaRegFloppyDisk className={className}/>;
+    // Binaries, Packages & Executables
+    case "exe":
+    case "msi":
+    case "cab":
+      return <BsFiletypeExe className={className}/>;
+    case "apk":
+      return <MdAndroid className={className}/>;
+    case "jar":
+    case "war":
+    case "ear":
+      return <BsFiletypeJava className={className}/>;
+    case "bin":
+      return <BsFileBinary className={className}/>;
+    case "deb":
+      return <FaDebian className={className}/>;
+    case "rpm":
+      return <FaRedhat className={className}/>;
+    // Shared library files
+    case "dll":
+    case "so":
+    case "dylib":
+      return <BiLibrary className={className}/>;
     // Misc files
+    case "key":
+    case "pem":
+    case "crt":
+    case "cer":
+    case "csr":
+    case "pfx":
+    case "jks":
+    case "keystore":
+    case "truststore":
+    case "pub":
+      return <PiCertificate className={className}/>;
+    case "torrent":
+      return <SiUtorrent className={className}/>;
     case "txt":
       return <PiFileText className={className}/>;
     default:

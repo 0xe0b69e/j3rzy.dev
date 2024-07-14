@@ -14,8 +14,8 @@ const config: Config = {
           "sm": "690px",
         },
         colors: {
-          "primary": "#a427ff",
-          "secondary": "#ff00ff",
+          "primary": "#b03cff",
+          "secondary": "#ff47ff",
           "background": {
             DEFAULT: "#f5f5f5",
             dark: "#333333",
