@@ -10,7 +10,7 @@ import { getFiles } from "@/actions/files";
 export default function Files (): JSX.Element
 {
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
-  const [ selectedFiles, setSelectedFiles ] = useState<string[]>([]);
+  const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
   
   useEffect(() =>
@@ -19,6 +19,9 @@ export default function Files (): JSX.Element
     fetchFiles().then();
   }, []);
   
+  const selectedFiles: FileData[] = selectedFileIds.map(id => files.find(f => f.id === id)).filter(Boolean) as FileData[];
+  const canEditSelectedFiles = !selectedFiles.map(f => f.canEdit).includes(false);
+  
   return (
     <div className="flex flex-col gap-2 p-2">
       <div
@@ -26,7 +29,7 @@ export default function Files (): JSX.Element
         <div
           className={cn(
             "w-full rounded-full bg-surface dark:bg-surface-dark p-1 transition-all duration-150 flex flex-row items-center space-x-1",
-            selectedFiles.length <= 0 && "opacity-0 pointer-events-none"
+            selectedFileIds.length <= 0 && "opacity-0 pointer-events-none"
           )}
         >
           <button
@@ -35,11 +38,11 @@ export default function Files (): JSX.Element
               "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
             )}
             title="Clear selection"
-            onClick={() => setSelectedFiles([])}
+            onClick={() => setSelectedFileIds([])}
           >
             <Cross1Icon/>
           </button>
-          <p>{selectedFiles.length} selected</p>
+          <p>{selectedFileIds.length} selected</p>
           <button
             className={cn(
               "inline-flex items-center justify-center p-2 rounded-full",
@@ -58,14 +61,16 @@ export default function Files (): JSX.Element
               "inline-flex items-center justify-center p-2 rounded-full group",
               "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
             )}
-            title={`Delete selected`} // TODO: Write why it's disabled
+            title={canEditSelectedFiles
+              ? "Delete selected"
+              : `You don't have permission to edit ${selectedFiles.filter(f => !f.canEdit).map(f => f.name).join(", ")}`}
             onClick={() =>
             {
               // TODO: Delete selected files
             }}
-            disabled={false /* TODO: Disable button if at least one selected file does not belong to user */}
+            disabled={!canEditSelectedFiles}
           >
-            <TrashIcon className="group-disabled:text-black/50 group-disabled:dark:text-white/50"/>
+            <TrashIcon className="group-disabled:text-black/25 group-disabled:dark:text-white/25"/>
           </button>
         </div>
         <div className="inline-flex flex-row space-x-2">
@@ -116,16 +121,16 @@ export default function Files (): JSX.Element
             className={cn(
               "grid rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
               useGrid ? "items-center justify-center text-center grid-cols-1" : "text-left xs:gap-2 gap-4 grid-cols-5 max-sm:grid-cols-4 max-xs:flex",
-              selectedFiles.includes(file.id)
+              selectedFileIds.includes(file.id)
                 ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
                 : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
             )}
             onClick={event =>
             {
               event.preventDefault();
-              const isSelected: boolean = selectedFiles.includes(file.id);
-              const unSelect = () => setSelectedFiles(selectedFiles.filter(f => f !== file.id));
-              const select = () => setSelectedFiles([ ...selectedFiles, file.id ]);
+              const isSelected: boolean = selectedFileIds.includes(file.id);
+              const unSelect = () => setSelectedFileIds(selectedFileIds.filter(f => f !== file.id));
+              const select = () => setSelectedFileIds([ ...selectedFileIds, file.id ]);
               if ( event.ctrlKey )
               {
                 if ( isSelected )
@@ -137,14 +142,14 @@ export default function Files (): JSX.Element
                 }
               } else if ( event.shiftKey )
               {
-                const lastSelected: string = selectedFiles[selectedFiles.length - 1];
+                const lastSelected: string = selectedFileIds[selectedFileIds.length - 1];
                 const lastIndex: number = files.findIndex(f => f.id === lastSelected);
                 const currentIndex: number = files.findIndex(f => f.id === file.id);
                 const range: number[] = [ lastIndex, currentIndex ].sort((a, b) => a - b);
-                setSelectedFiles(files.slice(range[0], range[1] + 1).map(f => f.id));
+                setSelectedFileIds(files.slice(range[0], range[1] + 1).map(f => f.id));
               } else
               {
-                setSelectedFiles(isSelected ? [] : [ file.id ]);
+                setSelectedFileIds(isSelected ? [] : [ file.id ]);
               }
             }}
           >

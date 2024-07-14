@@ -59,6 +59,7 @@ export async function getFiles (): Promise<FileData[]>
   });
   return files.map(file => FileDataSchema.parse({
     ...file,
-    username: file.user?.name ?? "Anonymous"
+    username: file.user?.name ?? "Anonymous",
+    canEdit: file.userId === session?.user?.id || session?.user?.role === "ADMIN"
   }));
 }

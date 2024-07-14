@@ -8,4 +8,5 @@ export const FileDataSchema = z.object({
   isPrivate: z.boolean(),
   userId: z.string().optional().nullable(),
   createdAt: z.date(),
+  canEdit: z.boolean()
 });

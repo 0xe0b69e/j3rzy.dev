@@ -1,5 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export const cn: (...inputs: ClassValue[]) => string = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -61,4 +67,4 @@ export function formatBytes (bytes: number, decimals: number = 2): string
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
-export const formatDate = (date: Date): string => "";
+export const formatDate = (date: Date): string => `${dayjs(date).format("YYYY-MM-DD HH:mm:ss")} ${dayjs.tz.guess()}`;
