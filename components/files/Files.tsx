@@ -13,13 +13,19 @@ export default function Files (): JSX.Element
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
+  const [ isLoading, setIsLoading ] = useState(true);
   
   const [ error, setError ] = useState<string | null>(null);
   const [ success, setSuccess ] = useState<string | null>(null);
   
   useEffect(() =>
   {
-    const fetchFiles = async () => setFiles(await getFiles());
+    const fetchFiles = async () =>
+    {
+      const files = await getFiles();
+      setFiles(files);
+      setIsLoading(false);
+    };
     fetchFiles().then();
   }, []);
   
@@ -74,21 +80,22 @@ export default function Files (): JSX.Element
         />
       </div>
       <div className={cn(
-        "h-full w-full grid",
-        useGrid
-          ? "grid-cols-1"
-          : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
+        "h-full w-full grid grid-cols-1 sm:grid-cols-4 gap-1",
+        useGrid ? "grid-cols-1" : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
       )}>
         <p
-          className={cn(useGrid && "text-xl overflow-hidden whitespace-nowrap text-ellipsis")}
+          className={cn("col-span-1 sm:col-auto overflow-hidden whitespace-nowrap text-ellipsis", useGrid && "text-xl")}
           title={file.name}
         >{file.name}</p>
         <p
-          className={cn(!useGrid && "max-xs:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatBytes(file.size)}</p>
+          className={cn("col-span-1 sm:col-auto", !useGrid && "max-xs:hidden")}
+        >{formatBytes(file.size)}</p>
         <p
-          className={cn(!useGrid && "max-xs:text-right overflow-hidden whitespace-nowrap text-ellipsis")}>{file.username}</p>
+          className={cn("col-span-1 sm:col-auto", !useGrid && "max-xs:text-right")}
+        >{file.username}</p>
         <p
-          className={cn(!useGrid && "max-sm:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatDate(file.createdAt)}</p>
+          className={cn("col-span-1 sm:col-auto", !useGrid && "max-sm:hidden")}
+        >{formatDate(file.createdAt)}</p>
       </div>
     </div>
   );
@@ -181,10 +188,21 @@ export default function Files (): JSX.Element
         </div>
       </div>
       <div
-        className="grid xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)] overflow-y-auto p-1 gap-2"
-        style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }) : ({})}
+        className={cn(
+          "xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)]",
+          isLoading
+            ? "flex items-center justify-center"
+            : "grid overflow-y-auto p-1 gap-2"
+        )}
+        style={(useGrid && !isLoading) ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }) : ({})}
       >
-        {files.map((file, index) => <File file={file} key={index}/>)}
+        {isLoading
+          ? (
+            <div>
+            </div>
+          )
+          : files.map((file, index) => <File file={file} key={index}/>)
+        }
       </div>
     </div>
   );

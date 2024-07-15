@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme"
+import defaultTheme from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
 const config: Config = {
@@ -28,7 +28,7 @@ const config: Config = {
             DEFAULT: "#000000",
             dark: "#ffffff",
           }
-        }
+        },
       },
       screens: {
         "xxs": "380px",
@@ -41,17 +41,17 @@ const config: Config = {
       (function ({ addUtilities, addComponents, e, config })
       {
         const newUtilities = {
-          '.horizontal-tb': {
-            writingMode: 'horizontal-tb',
+          ".horizontal-tb": {
+            writingMode: "horizontal-tb",
           },
-          '.vertical-rl': {
-            writingMode: 'vertical-rl'
+          ".vertical-rl": {
+            writingMode: "vertical-rl"
           },
-          '.vertical-lr': {
-            writingMode: 'vertical-lr'
+          ".vertical-lr": {
+            writingMode: "vertical-lr"
           }
-        }
-        addUtilities(newUtilities)
+        };
+        addUtilities(newUtilities);
       })
     ],
   }
