@@ -5,13 +5,16 @@ import { useEffect, useState } from "react";
 import FileIcon from "@/components/files/FileIcon";
 import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FileData } from "@/lib/definitions";
-import { getFiles } from "@/actions/files";
+import { deleteFiles, DeleteFilesResponse, getFiles } from "@/actions/files";
 
 export default function Files (): JSX.Element
 {
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
+  
+  // TODO: Do something with the response
+  const [ deleteFileResponse, setDeleteFileResponse ] = useState<DeleteFilesResponse | null>(null);
   
   useEffect(() =>
   {
@@ -64,9 +67,11 @@ export default function Files (): JSX.Element
             title={canEditSelectedFiles
               ? "Delete selected"
               : `You don't have permission to edit ${selectedFiles.filter(f => !f.canEdit).map(f => f.name).join(", ")}`}
-            onClick={() =>
+            onClick={async () =>
             {
-              // TODO: Delete selected files
+              if ( !canEditSelectedFiles ) return;
+              const response: DeleteFilesResponse = await deleteFiles(selectedFileIds);
+              setDeleteFileResponse(response);
             }}
             disabled={!canEditSelectedFiles}
           >
