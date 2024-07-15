@@ -18,8 +18,7 @@ export async function GET (request: NextRequest)
   if ( file.isPrivate )
   {
     const session: Session | null = await auth();
-    if ( !session ) return Response.json({ status: 403, body: "Unauthorized" });
-    if ( file.userId !== session.user.id ) return Response.json({ status: 403, body: "Unauthorized" });
+    if ( !session || file.userId !== session.user.id ) return Response.json({ status: 403, body: "Unauthorized" });
   }
   
   try
