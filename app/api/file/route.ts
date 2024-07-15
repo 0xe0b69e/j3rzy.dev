@@ -24,9 +24,11 @@ export async function GET (request: NextRequest): Promise<Response>
   const ids: string[] = id.split(",");
   let promises: (Prisma.File | null)[] = await Promise.all(ids.map(getFileById));
   const files: Prisma.File[] = promises.filter(Boolean) as Prisma.File[];
-  
   if ( files.length !== ids.length ) return Response.json({ status: 404, body: "Not found" });
-  if ( files.some(f => !f.isPrivate) ) return Response.json({ status: 403, body: "Unauthorized" });
+  
+  const session: Session | null = await auth();
+  if (files.some(f => f.isPrivate && (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")))
+    return Response.json({ status: 403, body: "Unauthorized" });
   
   try
   {
