@@ -8,11 +8,6 @@ import { FileData } from "@/lib/definitions";
 import { getFiles } from "@/actions/files";
 import Link from "next/link";
 
-interface FilesProps
-{
-
-}
-
 export default function Files (): JSX.Element
 {
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
@@ -30,6 +25,73 @@ export default function Files (): JSX.Element
   
   const selectedFiles: FileData[] = selectedFileIds.map(id => files.find(f => f.id === id)).filter(Boolean) as FileData[];
   const canEditSelectedFiles = !selectedFiles.map(f => f.canEdit).includes(false);
+  
+  const File = ({ file }: { file: FileData }): JSX.Element => (
+    <div
+      className={cn(
+        "rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
+        useGrid ? "grid items-center justify-center text-center grid-cols-1" : "text-left space-x-4 flex flex-row",
+        selectedFileIds.includes(file.id)
+          ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
+          : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
+      )}
+      onClick={event =>
+      {
+        event.preventDefault();
+        const isSelected: boolean = selectedFileIds.includes(file.id);
+        const unSelect = () => setSelectedFileIds(selectedFileIds.filter(f => f !== file.id));
+        const select = () => setSelectedFileIds([ ...selectedFileIds, file.id ]);
+        if ( event.ctrlKey )
+        {
+          if ( isSelected )
+          {
+            unSelect();
+          } else
+          {
+            select();
+          }
+        } else if ( event.shiftKey )
+        {
+          const lastSelected: string = selectedFileIds[selectedFileIds.length - 1];
+          const lastIndex: number = files.findIndex(f => f.id === lastSelected);
+          const currentIndex: number = files.findIndex(f => f.id === file.id);
+          const range: number[] = [ lastIndex, currentIndex ].sort((a, b) => a - b);
+          setSelectedFileIds(files.slice(range[0], range[1] + 1).map(f => f.id));
+        } else
+        {
+          setSelectedFileIds(isSelected ? [] : [ file.id ]);
+        }
+      }}
+    >
+      <div
+        className={useGrid ? "w-full flex justify-center" : ""}
+      >
+        <FileIcon
+          fileName={file.name}
+          className={cn(
+            useGrid && "w-32 h-32"
+          )}
+        />
+      </div>
+      <div className={cn(
+        "h-full w-full grid",
+        useGrid
+          ? "grid-cols-1"
+          : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
+      )}>
+        <p
+          className={cn(useGrid && "text-xl overflow-hidden whitespace-nowrap text-ellipsis")}
+          title={file.name}
+        >{file.name}</p>
+        <p
+          className={cn(!useGrid && "max-xs:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatBytes(file.size)}</p>
+        <p
+          className={cn(!useGrid && "max-xs:text-right overflow-hidden whitespace-nowrap text-ellipsis")}>{file.username}</p>
+        <p
+          className={cn(!useGrid && "max-sm:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatDate(file.createdAt)}</p>
+      </div>
+    </div>
+  );
   
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -122,70 +184,7 @@ export default function Files (): JSX.Element
         className="grid xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)] overflow-y-auto p-1 gap-2"
         style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }) : ({})}
       >
-        {files.map((file, index) => (
-          <div
-            key={index}
-            className={cn(
-              "rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
-              useGrid ? "grid items-center justify-center text-center grid-cols-1" : "text-left space-x-4 flex flex-row",
-              selectedFileIds.includes(file.id)
-                ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
-                : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
-            )}
-            onClick={event =>
-            {
-              event.preventDefault();
-              const isSelected: boolean = selectedFileIds.includes(file.id);
-              const unSelect = () => setSelectedFileIds(selectedFileIds.filter(f => f !== file.id));
-              const select = () => setSelectedFileIds([ ...selectedFileIds, file.id ]);
-              if ( event.ctrlKey )
-              {
-                if ( isSelected )
-                {
-                  unSelect();
-                } else
-                {
-                  select();
-                }
-              } else if ( event.shiftKey )
-              {
-                const lastSelected: string = selectedFileIds[selectedFileIds.length - 1];
-                const lastIndex: number = files.findIndex(f => f.id === lastSelected);
-                const currentIndex: number = files.findIndex(f => f.id === file.id);
-                const range: number[] = [ lastIndex, currentIndex ].sort((a, b) => a - b);
-                setSelectedFileIds(files.slice(range[0], range[1] + 1).map(f => f.id));
-              } else
-              {
-                setSelectedFileIds(isSelected ? [] : [ file.id ]);
-              }
-            }}
-          >
-            <div
-              className={useGrid ? "w-full flex justify-center" : ""}
-            >
-              <FileIcon
-                fileName={file.name}
-                className={cn(
-                  useGrid && "w-32 h-32"
-                )}
-              />
-            </div>
-            <div className={cn(
-              "h-full w-full grid",
-              useGrid
-                ? "grid-cols-1"
-                : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
-            )}>
-              <p
-                className={cn(useGrid && "text-xl overflow-hidden whitespace-nowrap text-ellipsis")}
-                title={file.name}
-              >{file.name}</p>
-              <p className={cn(!useGrid && "max-xs:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatBytes(file.size)}</p>
-              <p className={cn(!useGrid && "max-xs:text-right overflow-hidden whitespace-nowrap text-ellipsis")}>{file.username}</p>
-              <p className={cn(!useGrid && "max-sm:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatDate(file.createdAt)}</p>
-            </div>
-          </div>
-        ))}
+        {files.map((file, index) => <File file={file} key={index}/>)}
       </div>
     </div>
   );
