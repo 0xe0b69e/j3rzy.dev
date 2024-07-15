@@ -118,7 +118,7 @@ export default function Files (): JSX.Element
       </div>
       <div
         className="grid xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)] overflow-y-auto p-1 gap-2"
-        style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }) : ({})}
+        style={useGrid ? ({ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }) : ({})}
       >
         {files.map((file, index) => (
           <div
@@ -168,7 +168,7 @@ export default function Files (): JSX.Element
                 )}
               />
             </div>
-            <p className={cn(useGrid && "text-xl", "font-mono")}>{file.name}</p>
+            <p className={cn(useGrid && "text-xl")}>{file.name}</p>
             <p className={cn(!useGrid && "max-xs:hidden")}>{formatBytes(file.size)}</p>
             {!useGrid && <span className="xs:hidden flex-grow"/>}
             <p className={cn(!useGrid && "max-xs:text-right")}>{file.username}</p>
