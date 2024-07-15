@@ -31,7 +31,7 @@ export default function RootLayout ({ children }: Readonly<{ children: React.Rea
 {
   return (
     <html lang="en">
-    <body className={cn(varelaRound.className, "text-text dark:text-text-dark")}>
+    <body className={cn(varelaRound.className, "text-text dark:text-text-dark overflow-x-hidden")}>
     {children}
     <Footer />
     </body>

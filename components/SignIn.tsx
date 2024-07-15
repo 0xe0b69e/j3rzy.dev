@@ -12,10 +12,10 @@ export default function SignIn (): JSX.Element
     >
       <button
         type="submit"
-        className="flex flex-row items-center space-x-2 py-2 px-6 border-[1px] rounded-lg border-background dark:border-background-dark hover:bg-primary transition-colors duration-150"
+        className="flex flex-row items-center space-x-2 xs:py-2 xs:px-6 py-1 px-4 border-[1px] rounded-lg border-background dark:border-background-dark hover:bg-primary transition-colors duration-150"
       >
         <FcGoogle className="w-8 h-8" />
-        <p className="text-lg">Sign In with Google</p>
+        <p className="text-lg max-xs:hidden">Sign In with Google</p>
       </button>
     </form>
   );
