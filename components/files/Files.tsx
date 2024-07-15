@@ -6,6 +6,7 @@ import FileIcon from "@/components/files/FileIcon";
 import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FileData } from "@/lib/definitions";
 import { deleteFiles, DeleteFilesResponse, getFiles } from "@/actions/files";
+import Link from "next/link";
 
 export default function Files (): JSX.Element
 {
@@ -46,19 +47,17 @@ export default function Files (): JSX.Element
             <Cross1Icon/>
           </button>
           <p>{selectedFileIds.length} selected</p>
-          <button
+          <Link
             className={cn(
               "inline-flex items-center justify-center p-2 rounded-full",
               "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
             )}
             title="Download selected"
-            onClick={() =>
-            {
-              // TODO: Download selected files
-            }}
+            href={`/api/file?id=${selectedFileIds.join(",")}`}
+            target="_blank"
           >
             <DownloadIcon/>
-          </button>
+          </Link>
           <button
             className={cn(
               "inline-flex items-center justify-center p-2 rounded-full group",
