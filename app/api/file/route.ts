@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { Session } from "next-auth";
 import { v4 } from "uuid";
 import { db } from "@/lib/db";
+import JSZip from "jszip";
 
 export const config = {
   api: {
@@ -20,23 +21,31 @@ export async function GET (request: NextRequest): Promise<Response>
   const id: string | null = searchParams.get("id");
   if ( !id ) return Response.json({ status: 400, body: "Bad request" });
   
-  const file: Prisma.File | null = await getFileById(id);
-  if ( !file ) return Response.json({ status: 404, body: "Not found" });
+  const ids: string[] = id.split(",");
+  let promises: (Prisma.File | null)[] = await Promise.all(ids.map(getFileById));
+  const files: Prisma.File[] = promises.filter(Boolean) as Prisma.File[];
   
-  if ( file.isPrivate )
-  {
-    const session: Session | null = await auth();
-    if ( !session || file.userId !== session.user.id ) return Response.json({ status: 403, body: "Unauthorized" });
-  }
+  if ( files.length !== ids.length ) return Response.json({ status: 404, body: "Not found" });
+  if ( files.some(f => !f.isPrivate) ) return Response.json({ status: 403, body: "Unauthorized" });
   
   try
   {
-    const buffer: Buffer = await fs.readFile(path.join(process.cwd(), "files", file.fileName));
-    
-    return new Response(buffer, {
+    const buffers: Buffer[] = await Promise.all(files.map(f => fs.readFile(path.join(process.cwd(), "files", f.fileName))));
+    if ( buffers.length !== files.length ) return Response.json({ status: 500, body: "Internal server error" });
+    if ( buffers.length === 1 ) return new Response(buffers[0], {
       headers: {
-        "Content-Type": file.mimeType,
-        "Content-Disposition": `attachment; filename="${file.name}"`
+        "Content-Type": files[0].mimeType,
+        "Content-Disposition": `attachment; filename="${files[0].name}"`
+      }
+    });
+    
+    const zip: JSZip = new JSZip();
+    files.forEach((file, index) => zip.file(file.name, buffers[index]));
+    const blob: Blob = await zip.generateAsync({ type: "blob" });
+    return new Response(blob, {
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Disposition": `attachment; filename="files.zip"`
       }
     });
   } catch ( error: any )
@@ -60,7 +69,8 @@ export async function POST (request: NextRequest): Promise<Response>
   const blob: Blob = file as Blob;
   const buffer: Buffer = Buffer.from(await blob.arrayBuffer());
   
-  try {
+  try
+  {
     await fs.writeFile(path.join(process.cwd(), "files", uuid), buffer);
     const session: Session | null = await auth();
     await db.file.create({
@@ -73,6 +83,31 @@ export async function POST (request: NextRequest): Promise<Response>
         isPrivate: session ? isPrivate === "true" : false
       }
     });
+  } catch ( error: any )
+  {
+    console.error(error);
+    return Response.json({ status: 500, body: "Internal server error" });
+  }
+  
+  return Response.json({ status: 200, body: "OK" });
+}
+
+export async function DELETE (request: NextRequest): Promise<Response>
+{
+  const { searchParams } = new URL(request.url);
+  const id: string | null = searchParams.get("id");
+  if ( !id ) return Response.json({ status: 400, body: "Bad request" });
+  
+  const file: Prisma.File | null = await getFileById(id);
+  if ( !file ) return Response.json({ status: 404, body: "Not found" });
+  
+  const session: Session | null = await auth();
+  if ( file.userId !== session?.user.id ) return Response.json({ status: 403, body: "Unauthorized" });
+  
+  try
+  {
+    await fs.unlink(path.join(process.cwd(), "files", file.fileName));
+    await db.file.delete({ where: { id: file.id } });
   } catch ( error: any )
   {
     console.error(error);
