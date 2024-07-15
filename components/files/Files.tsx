@@ -5,8 +5,13 @@ import { useEffect, useState } from "react";
 import FileIcon from "@/components/files/FileIcon";
 import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { FileData } from "@/lib/definitions";
-import { deleteFiles, DeleteFilesResponse, getFiles } from "@/actions/files";
+import { getFiles } from "@/actions/files";
 import Link from "next/link";
+
+interface FilesProps
+{
+
+}
 
 export default function Files (): JSX.Element
 {
@@ -14,8 +19,8 @@ export default function Files (): JSX.Element
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
   
-  // TODO: Do something with the response
-  const [ deleteFileResponse, setDeleteFileResponse ] = useState<DeleteFilesResponse | null>(null);
+  const [ error, setError ] = useState<string | null>(null);
+  const [ success, setSuccess ] = useState<string | null>(null);
   
   useEffect(() =>
   {
@@ -69,8 +74,6 @@ export default function Files (): JSX.Element
             onClick={async () =>
             {
               if ( !canEditSelectedFiles ) return;
-              const response: DeleteFilesResponse = await deleteFiles(selectedFileIds);
-              setDeleteFileResponse(response);
             }}
             disabled={!canEditSelectedFiles}
           >
@@ -173,10 +176,13 @@ export default function Files (): JSX.Element
                 ? "grid-cols-1"
                 : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
             )}>
-              <p className={cn(useGrid && "text-xl")}>{file.name}</p>
-              <p className={cn(!useGrid && "max-xs:hidden")}>{formatBytes(file.size)}</p>
-              <p className={cn(!useGrid && "max-xs:text-right")}>{file.username}</p>
-              <p className={cn(!useGrid && "max-sm:hidden")}>{formatDate(file.createdAt)}</p>
+              <p
+                className={cn(useGrid && "text-xl overflow-hidden whitespace-nowrap text-ellipsis")}
+                title={file.name}
+              >{file.name}</p>
+              <p className={cn(!useGrid && "max-xs:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatBytes(file.size)}</p>
+              <p className={cn(!useGrid && "max-xs:text-right overflow-hidden whitespace-nowrap text-ellipsis")}>{file.username}</p>
+              <p className={cn(!useGrid && "max-sm:hidden overflow-hidden whitespace-nowrap text-ellipsis")}>{formatDate(file.createdAt)}</p>
             </div>
           </div>
         ))}
