@@ -124,8 +124,8 @@ export default function Files (): JSX.Element
           <div
             key={index}
             className={cn(
-              "grid rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
-              useGrid ? "items-center justify-center text-center grid-cols-1" : "text-left xs:gap-2 gap-4 grid-cols-5 max-sm:grid-cols-4 max-xs:flex",
+              "rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
+              useGrid ? "grid items-center justify-center text-center grid-cols-1" : "text-left space-x-4 flex flex-row",
               selectedFileIds.includes(file.id)
                 ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
                 : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
@@ -168,11 +168,17 @@ export default function Files (): JSX.Element
                 )}
               />
             </div>
-            <p className={cn(useGrid && "text-xl")}>{file.name}</p>
-            <p className={cn(!useGrid && "max-xs:hidden")}>{formatBytes(file.size)}</p>
-            {!useGrid && <span className="xs:hidden flex-grow"/>}
-            <p className={cn(!useGrid && "max-xs:text-right")}>{file.username}</p>
-            <p className={cn(!useGrid && "max-sm:hidden")}>{formatDate(file.createdAt)}</p>
+            <div className={cn(
+              "h-full w-full grid",
+              useGrid
+                ? "grid-cols-1"
+                : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
+            )}>
+              <p className={cn(useGrid && "text-xl")}>{file.name}</p>
+              <p className={cn(!useGrid && "max-xs:hidden")}>{formatBytes(file.size)}</p>
+              <p className={cn(!useGrid && "max-xs:text-right")}>{file.username}</p>
+              <p className={cn(!useGrid && "max-sm:hidden")}>{formatDate(file.createdAt)}</p>
+            </div>
           </div>
         ))}
       </div>
