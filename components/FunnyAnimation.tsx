@@ -4,7 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import tailwind from "@/tailwind.config";
 
-export default function FunnyAnimation (): JSX.Element
+interface FunnyAnimationProps
+{
+  title?: string;
+}
+
+export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Element
 {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   
@@ -45,7 +50,7 @@ export default function FunnyAnimation (): JSX.Element
     
     const darkMode: boolean = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    const text: string = `https://j3rzy.dev${pathname}`;
+    const text: string = title ?? `https://j3rzy.dev${pathname}`;
     
     const drawLine = (x1: number, y1: number, x2: number, y2: number) =>
     {

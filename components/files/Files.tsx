@@ -7,9 +7,13 @@ import { Cross1Icon, DownloadIcon, GridIcon, HamburgerMenuIcon, PlusIcon, TrashI
 import { FileData } from "@/lib/definitions";
 import { getFiles } from "@/actions/files";
 import Link from "next/link";
+import FunnyAnimation from "@/components/FunnyAnimation";
+import { useSession } from "next-auth/react";
 
 export default function Files (): JSX.Element
 {
+  const session = useSession();
+  
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
@@ -80,21 +84,21 @@ export default function Files (): JSX.Element
         />
       </div>
       <div className={cn(
-        "h-full w-full grid grid-cols-1 sm:grid-cols-4 gap-1",
+        "h-full w-full grid grid-cols-1 gap-1",
         useGrid ? "grid-cols-1" : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
       )}>
         <p
-          className={cn("col-span-1 sm:col-auto overflow-hidden whitespace-nowrap text-ellipsis", useGrid && "text-xl")}
+          className={cn("overflow-hidden whitespace-nowrap text-ellipsis", useGrid ? "text-xl" : "col-span-1 sm:col-auto")}
           title={file.name}
         >{file.name}</p>
         <p
-          className={cn("col-span-1 sm:col-auto", !useGrid && "max-xs:hidden")}
+          className={cn(!useGrid && "max-xs:hidden col-span-1 sm:col-auto")}
         >{formatBytes(file.size)}</p>
         <p
-          className={cn("col-span-1 sm:col-auto", !useGrid && "max-xs:text-right")}
+          className={cn("", !useGrid && "max-xs:text-right col-span-1 sm:col-auto")}
         >{file.username}</p>
         <p
-          className={cn("col-span-1 sm:col-auto", !useGrid && "max-sm:hidden")}
+          className={cn("", !useGrid && "max-sm:hidden col-span-1 sm:col-auto")}
         >{formatDate(file.createdAt)}</p>
       </div>
     </div>
@@ -143,6 +147,20 @@ export default function Files (): JSX.Element
             onClick={async () =>
             {
               if ( !canEditSelectedFiles ) return;
+              const response: Response = await fetch(`/api/file?id=${selectedFileIds.join(",")}`, {
+                method: "DELETE",
+              });
+              const json = await response.json();
+              if ( response.ok )
+              {
+                setFiles(files.filter(f => !selectedFileIds.includes(f.id)));
+                setSuccess("Selected files deleted successfully");
+                setFiles(files.filter(f => !selectedFileIds.includes(f.id)));
+                setSelectedFileIds([]);
+              } else
+              {
+                setError(json.message);
+              }
             }}
             disabled={!canEditSelectedFiles}
           >
@@ -198,8 +216,7 @@ export default function Files (): JSX.Element
       >
         {isLoading
           ? (
-            <div>
-            </div>
+            <FunnyAnimation title="Loading... Please wait..." />
           )
           : files.map((file, index) => <File file={file} key={index}/>)
         }
