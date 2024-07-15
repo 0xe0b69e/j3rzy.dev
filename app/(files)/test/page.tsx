@@ -25,7 +25,7 @@ export default function Page (): JSX.Element
   }
   
   return (
-    <div>
+    <div className="pt-16">
       <input ref={fileInputRef} type="file" />
       <input ref={checkboxRef} type="checkbox" id="checkbox" name="checkbox" />
       <label htmlFor="checkbox">Check me</label>
