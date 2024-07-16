@@ -15,12 +15,9 @@ import { FileData } from "@/lib/definitions";
 import { getFiles } from "@/actions/files";
 import Link from "next/link";
 import FunnyAnimation from "@/components/FunnyAnimation";
-import { useSession } from "next-auth/react";
 
 export default function Files (): JSX.Element
 {
-  const session = useSession();
-  
   const [ useGrid, setUseGrid ] = useState<boolean>(false);
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
