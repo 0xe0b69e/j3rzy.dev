@@ -2,7 +2,7 @@
 
 ### Start command
 ```bash
-docker run --env-file ./.env -p 3000:3000 <name>
+docker run -v /mnt:/app/files --env-file ./.env -p 3000:3000 <name>
 ```
 ### .env file
 ```env

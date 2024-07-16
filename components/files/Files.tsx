@@ -53,6 +53,27 @@ export default function Files (): JSX.Element
   const selectedFiles: FileData[] = selectedFileIds.map(id => files.find(f => f.id === id)).filter(Boolean) as FileData[];
   const canEditSelectedFiles = !selectedFiles.map(f => f.canEdit).includes(false);
   
+  const uploadFiles = async (fileList: FileList) => {
+    const formData: FormData = new FormData();
+    for ( let i = 0; i < fileList.length; i++ )
+    {
+      const file: File | null = fileList.item(i);
+      if ( !file ) continue;
+      formData.append("file", file);
+    }
+    const res: Response = await fetch("/api/file", {
+      method: "POST",
+      body: formData,
+    });
+    const json: any = await res.json();
+    if ( json.status === 200 && json.files )
+    {
+      setSuccess("Files uploaded successfully");
+      setFiles([ ...files, ...json.files ]);
+    } else
+      setError(json.message);
+  }
+  
   return (
     <>
       <div
@@ -88,25 +109,7 @@ export default function Files (): JSX.Element
         {
           event.preventDefault();
           setIsDraggingOver(false);
-          const fileList: FileList = event.dataTransfer.files;
-          const formData: FormData = new FormData();
-          for ( let i = 0; i < fileList.length; i++ )
-          {
-            const file: File | null = fileList.item(i);
-            if ( !file ) continue;
-            formData.append("file", file);
-          }
-          const res = await fetch("/api/file", {
-            method: "POST",
-            body: formData,
-          });
-          const json: any = await res.json();
-          if ( json.status === 200 && json.files )
-          {
-            setSuccess("Files uploaded successfully");
-            setFiles([ ...files, ...json.files ]);
-          } else
-            setError(json.message);
+          await uploadFiles(event.dataTransfer.files);
         }}
       >
         <div className={cn(
@@ -206,16 +209,29 @@ export default function Files (): JSX.Element
                 <GridIcon/>
               </button>
             </div>
-            <Link
+            <input
+              type="file"
+              name="file"
+              multiple
+              accept="*/*"
+              id="file"
+              className="hidden"
+              onChange={async event =>
+              {
+                if ( !event.target.files ) return;
+                await uploadFiles(event.target.files);
+              }}
+            />
+            <label
               className={cn(
                 "w-10 h-10 rounded-full bg-surface/75 dark:bg-surface-dark/75 hover:bg-surface hover:dark:bg-surface-dark border-surface dark:border-surface-dark inline-flex",
-                "items-center justify-center p-2"
+                "items-center justify-center p-2 cursor-pointer"
               )}
-              title="Upload file"
-              href={"/files/upload"}
+              title="Upload files"
+              htmlFor="file"
             >
               <PlusIcon className="w-6 h-6"/>
-            </Link>
+            </label>
           </div>
         </div>
         <div
