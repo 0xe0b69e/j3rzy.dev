@@ -136,7 +136,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
     const animationId: number = requestAnimationFrame(animate);
     
     return () => cancelAnimationFrame(animationId);
-  }, [circleY, frame, pathname, positions, textFrame, title, velocity]);
+  }, [ circleY, frame, pathname, positions, textFrame, title, velocity ]);
   
   return <canvas ref={canvasRef} width="200" height="48" className="rounded-md"/>;
 }
