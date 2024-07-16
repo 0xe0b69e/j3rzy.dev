@@ -8,7 +8,6 @@ COPY package.json package-lock.json ./
 COPY prisma ./prisma
 RUN npm ci
 RUN npx prisma generate
-RUN npx prisma db push
 
 FROM base AS builder
 WORKDIR /app
