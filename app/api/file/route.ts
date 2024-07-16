@@ -8,6 +8,7 @@ import { Session } from "next-auth";
 import { v4 } from "uuid";
 import { db } from "@/lib/db";
 import JSZip from "jszip";
+import { generateFileSha256Hash } from "@/lib/utils";
 
 const filePath: string = path.join(process.cwd(), "files");
 
@@ -69,12 +70,19 @@ export async function POST (request: NextRequest): Promise<Response>
     mimeType: file.type,
     userId: session?.user?.id,
     isPrivate: session ? isPrivate === "true" : false,
-    buffer: Buffer.from(await file.arrayBuffer())
+    buffer: Buffer.from(await file.arrayBuffer()),
+    sha256: await generateFileSha256Hash(Buffer.from(await file.arrayBuffer()))
   })));
+  const existingFiles: Prisma.File[] = await db.file.findMany();
+  const uniqueData = data.filter(({ sha256 }) => !existingFiles.some(f => f.sha256 === sha256));
+  existingFiles.forEach(f => {
+    const index = data.findIndex(({ sha256 }) => sha256 === f.sha256);
+    if ( index !== -1 ) data[index].fileName = f.fileName;
+  });
   
   try
   {
-    await Promise.all(data.map(async ({ fileName, buffer }) => fs.writeFile(path.join(filePath, fileName), buffer)));
+    await Promise.all(uniqueData.map(async ({ fileName, buffer }) => fs.writeFile(path.join(filePath, fileName), buffer)));
     await db.file.createMany({
       data: data.map(({ buffer, ...rest }) => rest)
     });
@@ -96,28 +104,31 @@ export async function POST (request: NextRequest): Promise<Response>
   }
 }
 
-export async function DELETE (request: NextRequest): Promise<Response>
-{
+export async function DELETE(request: NextRequest): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const id: string | null = searchParams.get("id");
-  if ( !id ) return Response.json({ status: 400, message: "Bad request" });
+  if (!id) return Response.json({ status: 400, message: "Bad request" });
   
   const ids: string[] = id.split(",");
   let promises: (Prisma.File | null)[] = await Promise.all(ids.map(getFileById));
   const files: Prisma.File[] = promises.filter(Boolean) as Prisma.File[];
-  if ( files.length !== ids.length ) return Response.json({ status: 404, message: "Not found" });
+  if (files.length !== ids.length) return Response.json({ status: 404, message: "Not found" });
   
   const session: Session | null = await auth();
-  if ( files.some(f => (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")) )
+  if (files.some(f => (f.userId !== session?.user?.id && session?.user?.role !== "ADMIN")))
     return Response.json({ status: 404, message: "Not found" });
   
-  try
-  {
-    await Promise.all(files.map(f => fs.unlink(path.join(filePath, f.fileName))));
+  try {
+    const fileUsageCounts = await Promise.all(files.map(file =>
+      db.file.count({ where: { sha256: file.sha256, id: { notIn: ids } } })
+    ));
+    const filesToDelete = files.filter((file, index) => fileUsageCounts[index] === 0);
+    
     await db.file.deleteMany({ where: { id: { in: files.map(f => f.id) } } });
+    await Promise.all(filesToDelete.map(f => fs.unlink(path.join(filePath, f.fileName))));
+    
     return Response.json({ status: 200, message: "OK" });
-  } catch ( error: any )
-  {
+  } catch (error: any) {
     console.error(error);
     return Response.json({ status: 500, message: "Internal server error" });
   }

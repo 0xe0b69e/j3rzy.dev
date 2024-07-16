@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
+import crypto from "crypto";
 
 export const cn: (...inputs: ClassValue[]) => string = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -38,17 +39,6 @@ export function isBlack (hex: string): boolean
   return r < threshold && g < threshold && b < threshold;
 }
 
-export async function convertFileToBase64 (file: File): Promise<string>
-{
-  return new Promise((resolve, reject) =>
-  {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);
-  });
-}
-
 export function formatBytes (bytes: number, decimals: number = 2): string
 {
   if ( bytes === 0 ) return "0 Bytes";
@@ -63,3 +53,5 @@ export function formatBytes (bytes: number, decimals: number = 2): string
 }
 
 export const formatDate = (date: Date): string => `${dayjs(date).format("YYYY-MM-DD HH:mm:ss")}`;
+
+export const generateFileSha256Hash = async (buffer: Buffer): Promise<string> => crypto.createHash("sha256").update(buffer).digest("hex");
