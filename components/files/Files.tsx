@@ -6,11 +6,10 @@ import FileIcon from "@/components/files/FileIcon";
 import {
   Cross1Icon,
   DownloadIcon,
-  ExclamationTriangleIcon,
   GridIcon,
   HamburgerMenuIcon,
   PlusIcon,
-  TrashIcon
+  TrashIcon, UploadIcon
 } from "@radix-ui/react-icons";
 import { FileData } from "@/lib/definitions";
 import { getFiles } from "@/actions/files";
@@ -26,6 +25,7 @@ export default function Files (): JSX.Element
   const [ selectedFileIds, setSelectedFileIds ] = useState<string[]>([]);
   const [ files, setFiles ] = useState<FileData[]>([]);
   const [ isLoading, setIsLoading ] = useState(true);
+  const [ isDraggingOver, setIsDraggingOver ] = useState(false);
   
   const [ error, setError ] = useState<string | null>(null);
   const [ success, setSuccess ] = useState<string | null>(null);
@@ -53,76 +53,11 @@ export default function Files (): JSX.Element
   const selectedFiles: FileData[] = selectedFileIds.map(id => files.find(f => f.id === id)).filter(Boolean) as FileData[];
   const canEditSelectedFiles = !selectedFiles.map(f => f.canEdit).includes(false);
   
-  const File = ({ file }: { file: FileData }): JSX.Element => (
-    <div
-      className={cn(
-        "rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
-        useGrid ? "grid items-center justify-center text-center grid-cols-1" : "text-left space-x-4 flex flex-row",
-        selectedFileIds.includes(file.id)
-          ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
-          : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
-      )}
-      onClick={event =>
-      {
-        event.preventDefault();
-        const isSelected: boolean = selectedFileIds.includes(file.id);
-        const unSelect = () => setSelectedFileIds(selectedFileIds.filter(f => f !== file.id));
-        const select = () => setSelectedFileIds([ ...selectedFileIds, file.id ]);
-        if ( event.ctrlKey )
-        {
-          if ( isSelected )
-            unSelect();
-          else
-            select();
-        } else if ( event.shiftKey )
-        {
-          const lastSelected: string = selectedFileIds[selectedFileIds.length - 1];
-          const lastIndex: number = files.findIndex(f => f.id === lastSelected);
-          const currentIndex: number = files.findIndex(f => f.id === file.id);
-          const range: number[] = [ lastIndex, currentIndex ].sort((a, b) => a - b);
-          setSelectedFileIds(files.slice(range[0], range[1] + 1).map(f => f.id));
-        } else
-        {
-          setSelectedFileIds(isSelected ? [] : [ file.id ]);
-        }
-      }}
-    >
-      <div
-        className={useGrid ? "w-full flex justify-center" : ""}
-      >
-        <FileIcon
-          fileName={file.name}
-          className={cn(
-            useGrid && "w-32 h-32"
-          )}
-        />
-      </div>
-      <div className={cn(
-        "h-full w-full grid grid-cols-1 gap-1",
-        useGrid ? "grid-cols-1" : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
-      )}>
-        <p
-          className={cn("overflow-hidden whitespace-nowrap text-ellipsis", useGrid ? "text-xl" : "col-span-1 sm:col-auto")}
-          title={file.name}
-        >{file.name}</p>
-        <p
-          className={cn(!useGrid && "max-xs:hidden col-span-1 sm:col-auto")}
-        >{formatBytes(file.size)}</p>
-        <p
-          className={cn("", !useGrid && "max-xs:text-right col-span-1 sm:col-auto")}
-        >{file.username}</p>
-        <p
-          className={cn("", !useGrid && "max-sm:hidden col-span-1 sm:col-auto")}
-        >{formatDate(file.createdAt)}</p>
-      </div>
-    </div>
-  );
-  
   return (
     <>
       <div
         className={cn(
-          "absolute bottom-5 right-0 flex items-center w-48 h-20 rounded-lg rounded-r-none cursor-pointer transition-all duration-300 p-2",
+          "absolute bottom-5 right-0 flex items-center w-48 h-20 rounded-lg rounded-r-none cursor-pointer transition-all duration-300 p-2 z-10 justify-center",
           success && "bg-green-500",
           error && "bg-red-500",
           !success && !error && "translate-x-48 bg-white"
@@ -133,11 +68,54 @@ export default function Files (): JSX.Element
           setSuccess(null);
         }}
       >
-        <div className="w-full h-full z-20">
-          <p className="break-words">{success ?? error}</p>
+        <div className="w-full h-full">
+          <p className="break-words text-left">{success ?? error}</p>
         </div>
       </div>
-      <div className="flex flex-col gap-2 p-2">
+      <div
+        className="flex flex-col gap-2 p-2 w-full h-full"
+        onDragOver={event =>
+        {
+          event.preventDefault();
+          setIsDraggingOver(true);
+        }}
+        onDragLeave={event =>
+        {
+          event.preventDefault();
+          setIsDraggingOver(false);
+        }}
+        onDrop={async event =>
+        {
+          event.preventDefault();
+          setIsDraggingOver(false);
+          const fileList: FileList = event.dataTransfer.files;
+          const formData: FormData = new FormData();
+          for ( let i = 0; i < fileList.length; i++ )
+          {
+            const file: File | null = fileList.item(i);
+            if ( !file ) continue;
+            formData.append("file", file);
+          }
+          const res = await fetch("/api/file", {
+            method: "POST",
+            body: formData,
+          });
+          const json: any = await res.json();
+          if ( json.status === 200 && json.files )
+          {
+            setSuccess("Files uploaded successfully");
+            setFiles([ ...files, ...json.files ]);
+          } else
+            setError(json.message);
+        }}
+      >
+        <div className={cn(
+          isDraggingOver ? "flex" : "hidden",
+          "w-full h-full flex-col pointer-events-none fixed items-center justify-center text-center z-40 bg-black/25 top-0 left-0"
+        )}>
+          <UploadIcon className="w-16 h-16"/>
+          <p className="text-lg">Drop to upload</p>
+        </div>
         <div
           className="w-full flex xxs:flex-row flex-col xxs:justify-between xxs:px-4 px-1 xxs:space-x-5 max-xxs:space-y-2">
           <div
@@ -179,20 +157,21 @@ export default function Files (): JSX.Element
               onClick={async () =>
               {
                 if ( !canEditSelectedFiles ) return;
-                console.log(`/api/file?id=${selectedFileIds.join(",")}`);
-                const response: Response = await fetch(`/api/file?id=${selectedFileIds.join(",")}`, {
+                const path: string = `/api/file?id=${selectedFileIds.join(",")}`;
+                const response: Response = await fetch(path, {
                   method: "DELETE",
                 });
                 const json = await response.json();
-                if ( response.ok )
+                console.log(`DELETE ${path} response: ${json}`);
+                if ( json.status === 200 )
                 {
-                  setFiles(files.filter(f => !selectedFileIds.includes(f.id)));
                   setSuccess("Selected files deleted successfully");
                   setFiles(files.filter(f => !selectedFileIds.includes(f.id)));
                   setSelectedFileIds([]);
                 } else
                 {
                   setError(json.message);
+                  setSelectedFileIds([]);
                 }
               }}
               disabled={!canEditSelectedFiles}
@@ -227,19 +206,21 @@ export default function Files (): JSX.Element
                 <GridIcon/>
               </button>
             </div>
-            <button
+            <Link
               className={cn(
                 "w-10 h-10 rounded-full bg-surface/75 dark:bg-surface-dark/75 hover:bg-surface hover:dark:bg-surface-dark border-surface dark:border-surface-dark inline-flex",
                 "items-center justify-center p-2"
               )}
               title="Upload file"
+              href={"/files/upload"}
             >
               <PlusIcon className="w-6 h-6"/>
-            </button>
+            </Link>
           </div>
         </div>
         <div
           className={cn(
+            //"xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)]",
             "xxs:max-h-[calc(100vh-128px)] max-h-[calc(100vh-175px)]",
             isLoading
               ? "flex items-center justify-center"
@@ -251,7 +232,71 @@ export default function Files (): JSX.Element
             ? (
               <FunnyAnimation title="Loading... Please wait..."/>
             )
-            : files.map((file, index) => <File file={file} key={index}/>)
+            : files.map((file, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "rounded-lg p-2 shadow bg-gradient-to-b select-none transition-colors duration-150 cursor-pointer",
+                  useGrid ? "grid items-center justify-center text-center grid-cols-1" : "text-left space-x-4 flex flex-row",
+                  selectedFileIds.includes(file.id)
+                    ? "dark:from-secondary dark:to-primary from-secondary/40 to-primary/65"
+                    : "from-surface/75 dark:from-surface-dark/75 to-surface/40 dark:to-surface-dark/40"
+                )}
+                onClick={event =>
+                {
+                  event.preventDefault();
+                  const isSelected: boolean = selectedFileIds.includes(file.id);
+                  const unSelect = () => setSelectedFileIds(selectedFileIds.filter(f => f !== file.id));
+                  const select = () => setSelectedFileIds([ ...selectedFileIds, file.id ]);
+                  if ( event.ctrlKey )
+                  {
+                    if ( isSelected )
+                      unSelect();
+                    else
+                      select();
+                  } else if ( event.shiftKey )
+                  {
+                    const lastSelected: string = selectedFileIds[selectedFileIds.length - 1];
+                    const lastIndex: number = files.findIndex(f => f.id === lastSelected);
+                    const currentIndex: number = files.findIndex(f => f.id === file.id);
+                    const range: number[] = [ lastIndex, currentIndex ].sort((a, b) => a - b);
+                    setSelectedFileIds(files.slice(range[0], range[1] + 1).map(f => f.id));
+                  } else
+                  {
+                    setSelectedFileIds(isSelected ? [] : [ file.id ]);
+                  }
+                }}
+              >
+                <div
+                  className={useGrid ? "w-full flex justify-center" : ""}
+                >
+                  <FileIcon
+                    fileName={file.name}
+                    className={cn(
+                      useGrid && "w-32 h-32"
+                    )}
+                  />
+                </div>
+                <div className={cn(
+                  "h-full w-full grid grid-cols-1 gap-1",
+                  useGrid ? "grid-cols-1" : "sm:grid-cols-4 xs:grid-cols-3 grid-cols-2"
+                )}>
+                  <p
+                    className={cn("overflow-hidden whitespace-nowrap text-ellipsis", useGrid ? "text-xl" : "col-span-1 sm:col-auto")}
+                    title={file.name}
+                  >{file.name}</p>
+                  <p
+                    className={cn(!useGrid && "max-xs:hidden col-span-1 sm:col-auto")}
+                  >{formatBytes(file.size)}</p>
+                  <p
+                    className={cn("", !useGrid && "max-xs:text-right col-span-1 sm:col-auto")}
+                  >{file.username}</p>
+                  <p
+                    className={cn("", !useGrid && "max-sm:hidden col-span-1 sm:col-auto")}
+                  >{formatDate(file.createdAt)}</p>
+                </div>
+              </div>
+            ))
           }
         </div>
       </div>

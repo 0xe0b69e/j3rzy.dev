@@ -50,7 +50,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
     
     const darkMode: boolean = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    const text: string = title ?? `https://j3rzy.dev${pathname}`;
+    const text: string = title ?? `j3rzy.dev${pathname}`;
     
     const drawLine = (x1: number, y1: number, x2: number, y2: number) =>
     {
@@ -89,7 +89,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
       ctx.font = "17px monospace";
       
       const textWidth: number = ctx.measureText(text).width;
-      const x: number = ((canvas.width - textFrame) % (canvas.width + textWidth)) - textWidth;
+      const x: number = ((canvas.width + textFrame) % (canvas.width + textWidth)) - textWidth;
       ctx.fillText(text, x, canvas.height / 2 - 10);
       
       positions.forEach(({ y, size }) =>
@@ -137,7 +137,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
     const animationId: number = requestAnimationFrame(animate);
     
     return () => cancelAnimationFrame(animationId);
-  }, [ circleY, frame, pathname, positions, textFrame, velocity ]);
+  }, [circleY, frame, pathname, positions, textFrame, title, velocity]);
   
   return <canvas ref={canvasRef} width="200" height="48" className="rounded-md"/>;
 }

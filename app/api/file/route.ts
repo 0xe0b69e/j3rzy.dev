@@ -27,7 +27,7 @@ export async function GET (request: NextRequest): Promise<Response>
   if ( files.length !== ids.length ) return Response.json({ status: 404, message: "Not found" });
   
   const session: Session | null = await auth();
-  if (files.some(f => f.isPrivate && (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")))
+  if ( files.some(f => f.isPrivate && (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")) )
     return Response.json({ status: 403, message: "Unauthorized" });
   
   try
@@ -75,7 +75,7 @@ export async function POST (request: NextRequest): Promise<Response>
   {
     await fs.writeFile(path.join(process.cwd(), "files", uuid), buffer);
     const session: Session | null = await auth();
-    await db.file.create({
+    const file: Prisma.File =  await db.file.create({
       data: {
         name,
         fileName: uuid,
@@ -85,13 +85,23 @@ export async function POST (request: NextRequest): Promise<Response>
         isPrivate: session ? isPrivate === "true" : false
       }
     });
+    return Response.json({
+      status: 200, message: "OK", files: [{
+        id: file.id,
+        name,
+        username: session?.user?.name ?? "Anonymous",
+        size,
+        isPrivate: file.isPrivate,
+        userId: file.userId,
+        createdAt: file.createdAt,
+        canEdit: file.userId === session?.user?.id || session?.user?.role === "ADMIN"
+      }]
+    });
   } catch ( error: any )
   {
     console.error(error);
     return Response.json({ status: 500, message: "Internal server error" });
   }
-  
-  return Response.json({ status: 200, message: "OK" });
 }
 
 export async function DELETE (request: NextRequest): Promise<Response>
@@ -100,21 +110,23 @@ export async function DELETE (request: NextRequest): Promise<Response>
   const id: string | null = searchParams.get("id");
   if ( !id ) return Response.json({ status: 400, message: "Bad request" });
   
-  const file: Prisma.File | null = await getFileById(id);
-  if ( !file ) return Response.json({ status: 404, message: "Not found" });
+  const ids: string[] = id.split(",");
+  let promises: (Prisma.File | null)[] = await Promise.all(ids.map(getFileById));
+  const files: Prisma.File[] = promises.filter(Boolean) as Prisma.File[];
+  if ( files.length !== ids.length ) return Response.json({ status: 404, message: "Not found" });
   
   const session: Session | null = await auth();
-  if ( file.userId !== session?.user.id && session?.user.role !== "ADMIN" ) return Response.json({ status: 403, message: "Unauthorized" });
+  if ( files.some(f => (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")) )
+    return Response.json({ status: 403, message: "Unauthorized" });
   
   try
   {
-    await fs.unlink(path.join(process.cwd(), "files", file.fileName));
-    await db.file.delete({ where: { id: file.id } });
+    await Promise.all(files.map(f => fs.unlink(path.join(process.cwd(), "files", f.fileName))));
+    await db.file.deleteMany({ where: { id: { in: files.map(f => f.id) } } });
+    return Response.json({ status: 200, message: "OK" });
   } catch ( error: any )
   {
     console.error(error);
     return Response.json({ status: 500, message: "Internal server error" });
   }
-  
-  return Response.json({ status: 200, message: "OK" });
 }
