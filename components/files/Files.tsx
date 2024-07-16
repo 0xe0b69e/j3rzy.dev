@@ -70,7 +70,8 @@ export default function Files (): JSX.Element
     if ( json.status === 200 && json.files )
     {
       setSuccess("Files uploaded successfully");
-      setFiles([ ...files, ...json.files ]);
+      const newFiles = json.files.filter((newFile: FileData) => !files.some((existingFile: FileData) => existingFile.id === newFile.id));
+      setFiles([ ...files, ...newFiles ]);
     } else
       setError(json.message);
   };
@@ -192,7 +193,8 @@ export default function Files (): JSX.Element
                 "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
               )}
               title={selectedFiles.length === 1 ? "Copy link to file" : "You can only copy link to one file at a time"}
-              onClick={() => {
+              onClick={() =>
+              {
                 handleCopy(`https://j3rzy.dev/file/${selectedFiles[0].id}`);
                 setSuccess("Link copied to clipboard");
               }}
