@@ -44,7 +44,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
     const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
     
     const gravity: number = 0.4;
-    const bounceFactor: number = -0.1;
+    const bounceFactor: number = -0.3;
     const groundY: number = 36;
     const jumpHeight: number = -3;
     
