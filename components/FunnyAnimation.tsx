@@ -89,7 +89,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
       ctx.font = "17px monospace";
       
       const textWidth: number = ctx.measureText(text).width;
-      const x: number = ((canvas.width + textFrame) % (canvas.width + textWidth)) - textWidth;
+      const x: number = (canvas.width - (Math.abs(textFrame) % (canvas.width + textWidth)));
       ctx.fillText(text, x, canvas.height / 2 - 10);
       
       positions.forEach(({ y, size }) =>
