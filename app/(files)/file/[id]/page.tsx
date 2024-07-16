@@ -21,7 +21,7 @@ export async function generateMetadata (
 ): Promise<Metadata>
 {
   const file: Prisma.File | null = await getFileById(params.id);
-  const uploader: Prisma.User | null = file ? await getUserById(file.id) : null;
+  const uploader: Prisma.User | null = file?.userId ? await getUserById(file.userId) : null;
   
   const previousImages = (await parent).openGraph?.images || [];
   
@@ -57,7 +57,7 @@ export default async function Page ({ params, searchParams }: PageProps): Promis
   const session: Session | null = await auth();
   
   const file: Prisma.File | null = await getFileById(params.id);
-  const uploader: Prisma.User | null = file ? await getUserById(file.id) : null;
+  const uploader: Prisma.User | null = file?.userId ? await getUserById(file.userId) : null;
   
   return (
     <>
