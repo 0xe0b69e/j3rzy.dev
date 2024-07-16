@@ -322,12 +322,15 @@ export default function Files (): JSX.Element
                   >{file.name}</p>
                   <p
                     className={cn(!useGrid && "max-xs:hidden col-span-1 sm:col-auto")}
+                    title={`${file.size} bytes`}
                   >{formatBytes(file.size)}</p>
                   <p
                     className={cn("", !useGrid && "max-xs:text-right col-span-1 sm:col-auto")}
+                    title="Uploaded by"
                   >{file.username}</p>
                   <p
                     className={cn("", !useGrid && "max-sm:hidden col-span-1 sm:col-auto")}
+                    title="Uploaded at"
                   >{formatDate(file.createdAt)}</p>
                 </div>
               </div>

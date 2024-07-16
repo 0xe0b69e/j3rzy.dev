@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import tailwind from "@/tailwind.config";
 
 interface FunnyAnimationProps
 {
