@@ -74,7 +74,7 @@ export default async function Page ({ params, searchParams }: PageProps): Promis
             <Link
               href={`/api/file?id=${file.id}`}
               target="_blank"
-              className="py-1 px-8 bg-gradient-to-b from-secondary to-secondary-dark rounded-lg text-center text-white"
+              className="py-1 px-8 bg-gradient-to-b from-secondary to-primary hover:from-secondary-dark hover:to-primary-dark rounded-lg text-center text-white"
             >
               Download
             </Link>
