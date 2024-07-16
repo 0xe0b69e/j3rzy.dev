@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci
+RUN npx prisma generate
+RUN npx prisma db push
 
 FROM base AS builder
 WORKDIR /app
