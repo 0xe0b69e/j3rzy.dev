@@ -9,11 +9,7 @@ import { v4 } from "uuid";
 import { db } from "@/lib/db";
 import JSZip from "jszip";
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
+const filePath: string = path.join(process.cwd(), "files");
 
 export async function GET (request: NextRequest): Promise<Response>
 {
@@ -32,7 +28,7 @@ export async function GET (request: NextRequest): Promise<Response>
   
   try
   {
-    const buffers: Buffer[] = await Promise.all(files.map(f => fs.readFile(path.join(process.cwd(), "files", f.fileName))));
+    const buffers: Buffer[] = await Promise.all(files.map(f => fs.readFile(path.join(filePath, f.fileName))));
     if ( buffers.length !== files.length ) return Response.json({ status: 500, message: "Internal server error" });
     if ( buffers.length === 1 ) return new Response(buffers[0], {
       headers: {
@@ -60,42 +56,38 @@ export async function GET (request: NextRequest): Promise<Response>
 export async function POST (request: NextRequest): Promise<Response>
 {
   const formData: FormData = await request.formData();
-  const file: FormDataEntryValue | null = formData.get("file");
+  const files: File[] | null = formData.getAll("file") as File[];
   const isPrivate: FormDataEntryValue | null = formData.get("private");
-  if ( !file || !(file instanceof File) ) return Response.json({ status: 400, message: "Bad request" });
+  if ( !files || !files.length || !files.every(file => file instanceof File) )
+    return Response.json({ status: 400, message: "Bad request" });
   
-  const name: string = (file as File).name;
-  const uuid: string = v4();
-  const mimeType: string = (file as File).type;
-  const size: number = (file as File).size;
-  const blob: Blob = file as Blob;
-  const buffer: Buffer = Buffer.from(await blob.arrayBuffer());
+  const session: Session | null = await auth();
+  const data = await Promise.all(files.map(async (file) => ({
+    name: file.name,
+    fileName: v4(),
+    size: file.size,
+    mimeType: file.type,
+    userId: session?.user?.id,
+    isPrivate: session ? isPrivate === "true" : false,
+    buffer: Buffer.from(await file.arrayBuffer())
+  })));
   
   try
   {
-    await fs.writeFile(path.join(process.cwd(), "files", uuid), buffer);
-    const session: Session | null = await auth();
-    const file: Prisma.File =  await db.file.create({
-      data: {
-        name,
-        fileName: uuid,
-        size,
-        mimeType,
-        userId: session?.user?.id,
-        isPrivate: session ? isPrivate === "true" : false
-      }
+    await Promise.all(data.map(async ({ fileName, buffer }) => fs.writeFile(path.join(filePath, fileName), buffer)));
+    await db.file.createMany({
+      data: data.map(({ buffer, ...rest }) => rest)
+    });
+    const files: Prisma.File[] = await db.file.findMany({
+      where: { fileName: { in: data.map(({ fileName }) => fileName) } }
     });
     return Response.json({
-      status: 200, message: "OK", files: [{
-        id: file.id,
-        name,
+      status: 200, message: "OK",
+      files: files.map(({ fileName, updatedAt, ...file }) => ({
+        ...file,
         username: session?.user?.name ?? "Anonymous",
-        size,
-        isPrivate: file.isPrivate,
-        userId: file.userId,
-        createdAt: file.createdAt,
         canEdit: file.userId === session?.user?.id || session?.user?.role === "ADMIN"
-      }]
+      }))
     });
   } catch ( error: any )
   {
@@ -121,7 +113,7 @@ export async function DELETE (request: NextRequest): Promise<Response>
   
   try
   {
-    await Promise.all(files.map(f => fs.unlink(path.join(process.cwd(), "files", f.fileName))));
+    await Promise.all(files.map(f => fs.unlink(path.join(filePath, f.fileName))));
     await db.file.deleteMany({ where: { id: { in: files.map(f => f.id) } } });
     return Response.json({ status: 200, message: "OK" });
   } catch ( error: any )
