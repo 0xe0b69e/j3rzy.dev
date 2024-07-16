@@ -27,7 +27,7 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
     
     while ( current < 200 )
     {
-      const increment = Math.floor(Math.random() * 20) + 20; // Adjust the range of increment as needed
+      const increment = Math.floor(Math.random() * 20) + 20;
       current += increment;
       if ( current <= 200 )
       {

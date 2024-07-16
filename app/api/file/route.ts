@@ -24,7 +24,7 @@ export async function GET (request: NextRequest): Promise<Response>
   
   const session: Session | null = await auth();
   if ( files.some(f => f.isPrivate && (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")) )
-    return Response.json({ status: 403, message: "Unauthorized" });
+    return Response.json({ status: 404, message: "Not found" });
   
   try
   {
@@ -109,7 +109,7 @@ export async function DELETE (request: NextRequest): Promise<Response>
   
   const session: Session | null = await auth();
   if ( files.some(f => (f.userId !== session?.user.id && session?.user?.role !== "ADMIN")) )
-    return Response.json({ status: 403, message: "Unauthorized" });
+    return Response.json({ status: 404, message: "Not found" });
   
   try
   {

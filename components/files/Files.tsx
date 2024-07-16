@@ -1,14 +1,14 @@
 "use client";
 
 import { cn, formatBytes, formatDate } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FileIcon from "@/components/files/FileIcon";
 import {
   Cross1Icon,
   DownloadIcon,
   GridIcon,
   HamburgerMenuIcon,
-  PlusIcon,
+  PlusIcon, Share1Icon,
   TrashIcon, UploadIcon
 } from "@radix-ui/react-icons";
 import { FileData } from "@/lib/definitions";
@@ -53,7 +53,8 @@ export default function Files (): JSX.Element
   const selectedFiles: FileData[] = selectedFileIds.map(id => files.find(f => f.id === id)).filter(Boolean) as FileData[];
   const canEditSelectedFiles = !selectedFiles.map(f => f.canEdit).includes(false);
   
-  const uploadFiles = async (fileList: FileList) => {
+  const uploadFiles = async (fileList: FileList) =>
+  {
     const formData: FormData = new FormData();
     for ( let i = 0; i < fileList.length; i++ )
     {
@@ -72,7 +73,11 @@ export default function Files (): JSX.Element
       setFiles([ ...files, ...json.files ]);
     } else
       setError(json.message);
-  }
+  };
+  const handleCopy = useCallback((text: string) =>
+  {
+    navigator.clipboard.writeText(text).then(r => console.log("Copied!"));
+  }, []);
   
   return (
     <>
@@ -180,6 +185,20 @@ export default function Files (): JSX.Element
               disabled={!canEditSelectedFiles}
             >
               <TrashIcon className="group-disabled:text-black/25 group-disabled:dark:text-white/25"/>
+            </button>
+            <button
+              className={cn(
+                "inline-flex items-center justify-center p-2 rounded-full group disabled:cursor-not-allowed",
+                "hover:bg-background/50 hover:dark:bg-background-dark/50 active:bg-background/75 active:dark:bg-background-dark/75 transition-colors duration-150"
+              )}
+              title={selectedFiles.length === 1 ? "Copy link to file" : "You can only copy link to one file at a time"}
+              onClick={() => {
+                handleCopy(`https://j3rzy.dev/file/${selectedFiles[0].id}`);
+                setSuccess("Link copied to clipboard");
+              }}
+              disabled={selectedFiles.length > 1}
+            >
+              <Share1Icon className="group-disabled:text-black/25 group-disabled:dark:text-white/25"/>
             </button>
           </div>
           <div className="inline-flex flex-row space-x-2">
