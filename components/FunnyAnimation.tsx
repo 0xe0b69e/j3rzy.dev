@@ -94,8 +94,8 @@ export default function FunnyAnimation ({ title }: FunnyAnimationProps): JSX.Ele
       
       positions.forEach(({ y, size }) =>
       {
-        ctx.fillStyle = tailwind.theme?.extend?.colors.secondary ?? "red";
-        ctx.strokeStyle = tailwind.theme?.extend?.colors.secondary ?? "red";
+        ctx.fillStyle = "#ff47ff";
+        ctx.strokeStyle = "#ff47ff";
         let newX = ((frame - y) + canvas.width) % canvas.width;
         drawTriangle(newX, 40, size, true);
       });
