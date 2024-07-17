@@ -23,8 +23,6 @@ export async function generateMetadata (
   const file: Prisma.File | null = await getFileById(params.id);
   const uploader: Prisma.User | null = file?.userId ? await getUserById(file.userId) : null;
   
-  const previousImages = (await parent).openGraph?.images || [];
-  
   return (!!file && !file.isPrivate)
     ? ({
       metadataBase: process.env.NODE_ENV === "production" ? new URL("https://j3rzy.dev") : new URL("http://localhost:3000"),
@@ -35,7 +33,13 @@ export async function generateMetadata (
         description: `${formatBytes(file.size)}, uploaded by ${uploader?.name ?? "Anonymous"} on ${formatDate(file.createdAt)}`,
         images: file.mimeType.startsWith("image/") ? [ {
           url: `/api/file?id=${file.id}`,
-        } ] : previousImages
+        } ] : [],
+        audio: file.mimeType.startsWith("audio/") ? [ {
+          url: `/api/file?id=${file.id}`,
+        } ] : [],
+        videos: file.mimeType.startsWith("video/") ? [ {
+          url: `/api/file?id=${file.id}`,
+        } ] : [],
       },
     })
     : ({
@@ -45,7 +49,6 @@ export async function generateMetadata (
         type: "website",
         title: "File not found",
         description: "The file you're looking for doesn't exist.",
-        images: previousImages,
       },
     });
 }
