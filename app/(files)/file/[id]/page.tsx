@@ -27,7 +27,7 @@ export async function generateMetadata (
   
   return (!!file && !file.isPrivate)
     ? ({
-      metadataBase: new URL("https://j3rzy.dev"),
+      metadataBase: process.env.NODE_ENV === "production" ? new URL("https://j3rzy.dev") : new URL("http://localhost:3000"),
       title: file.name,
       openGraph: {
         type: "website",
@@ -35,13 +35,11 @@ export async function generateMetadata (
         description: `${formatBytes(file.size)}, uploaded by ${uploader?.name ?? "Anonymous"} on ${formatDate(file.createdAt)}`,
         images: file.mimeType.startsWith("image/") ? [ {
           url: `/api/file?id=${file.id}`,
-          width: 1200,
-          height: 630,
         } ] : previousImages
       },
     })
     : ({
-      metadataBase: new URL("https://j3rzy.dev"),
+      metadataBase: process.env.NODE_ENV === "production" ? new URL("https://j3rzy.dev") : new URL("http://localhost:3000"),
       title: "File not found",
       openGraph: {
         type: "website",

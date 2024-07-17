@@ -192,7 +192,7 @@ export default function Files (): JSX.Element
               title={selectedFiles.length === 1 ? "Copy link to file" : "You can only copy link to one file at a time"}
               onClick={() =>
               {
-                handleCopy(`https://j3rzy.dev/file/${selectedFiles[0].id}`);
+                handleCopy(`${window.location.origin}/file/${selectedFiles[0].id}`);
                 setSuccess("Link copied to clipboard");
               }}
               disabled={selectedFiles.length > 1}
