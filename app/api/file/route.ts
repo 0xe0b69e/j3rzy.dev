@@ -59,7 +59,10 @@ export async function POST (request: NextRequest): Promise<Response>
   const formData: FormData = await request.formData();
   const files: File[] | null = formData.getAll("file") as File[];
   const isPrivate: FormDataEntryValue | null = formData.get("private");
-  if ( !files || !files.length || !files.every(file => file instanceof File) )
+  
+  if (!files || !files.length)
+    return Response.json({ status: 400, message: "No files uploaded" })
+  if ( !files.every(file => file instanceof File) )
     return Response.json({ status: 400, message: "Bad request" });
   
   const session: Session | null = await auth();
