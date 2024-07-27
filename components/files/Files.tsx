@@ -72,6 +72,7 @@ export default function Files (): JSX.Element
     } else
       setError(json.message);
   };
+  
   const handleCopy = useCallback((text: string) =>
   {
     navigator.clipboard.writeText(text).then(r => console.log("Copied!"));
@@ -112,6 +113,7 @@ export default function Files (): JSX.Element
         {
           event.preventDefault();
           setIsDraggingOver(false);
+          console.log(event.dataTransfer);
           await uploadFiles(event.dataTransfer.files);
         }}
       >

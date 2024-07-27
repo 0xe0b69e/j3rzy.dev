@@ -43,10 +43,6 @@ export default function Home (): JSX.Element
     setTimeout(() => setFinished(true), 1100);
   }, []);
   
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText("mc.j3rzy.dev").then(r => console.log("Copied!"));
-  }, []);
-  
   return (
     <main className={cn(
       "w-full h-full",
@@ -217,36 +213,6 @@ export default function Home (): JSX.Element
         </Card>
       </div>
       <Card className="sm:w-full max-sm:h-full max-sm:flex max-sm:justify-center">
-        <div className="inline-flex flex-col space-y-1">
-          <p className={cn(
-            "text-lg font-bold text-indigo-500",
-            mojang.className
-          )}>
-            Friendly survival server:
-          </p>
-          <div className="inline-flex xs:flex-row max-xs:flex-col items-center xs:space-x-1 max-xs:space-y-1">
-            <input
-              value="mc.j3rzy.dev"
-              readOnly
-              className={cn(
-                "focus-visible:outline-none p-2 text-lg text-white bg-black border-2 border-white max-sm:w-full",
-                mojang.className
-              )}
-              style={{
-                textShadow: "2px 2px #4C4C4C"
-              }}
-            />
-            <button
-              className={cn(
-                "minecraft-btn mx-auto sm:w-32 w-full text-center text-white truncate p-1 border-2 border-b-4 hover:text-yellow-200",
-                mojang.className
-              )}
-              onClick={handleCopy}
-            >
-              Copy
-            </button>
-          </div>
-        </div>
       </Card>
     </main>
   )
