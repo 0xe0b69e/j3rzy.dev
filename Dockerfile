@@ -5,9 +5,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-COPY prisma ./prisma
 RUN npm ci
-RUN npx prisma generate
 
 FROM base AS builder
 WORKDIR /app
@@ -33,8 +31,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-
-VOLUME /app/files
 
 EXPOSE 3000
 
