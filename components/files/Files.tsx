@@ -75,7 +75,7 @@ export default function Files (): JSX.Element
   
   const handleCopy = useCallback((text: string) =>
   {
-    navigator.clipboard.writeText(text).then(r => console.log("Copied!"));
+    navigator.clipboard.writeText(text).then(r => console.log(`Copied "${text}" to clipboard`));
   }, []);
   
   return (
