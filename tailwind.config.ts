@@ -13,28 +13,6 @@ const config: Config = {
         screens: {
           "sm": "690px",
         },
-        colors: {
-          "primary": {
-            DEFAULT: "#b03cff",
-            dark: "#c000c0",
-          },
-          "secondary": {
-            DEFAULT: "#ff47ff",
-            dark: "#ff00ff",
-          },
-          "background": {
-            DEFAULT: "#f5f5f5",
-            dark: "#333333",
-          },
-          "surface": {
-            DEFAULT: "#ffffff",
-            dark: "#444444",
-          },
-          "text": {
-            DEFAULT: "#000000",
-            dark: "#ffffff",
-          }
-        },
       },
       screens: {
         "xxs": "380px",
