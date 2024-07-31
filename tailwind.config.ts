@@ -13,6 +13,17 @@ const config: Config = {
         screens: {
           "sm": "690px",
         },
+        keyframes: {
+          randomMove: {
+            '0%, 100%': { transform: 'translate(0, 0)' },
+            '25%': { transform: 'translate(-2px, 2px)' },
+            '50%': { transform: 'translate(2px, -2px)' },
+            '75%': { transform: 'translate(-2px, -2px)' },
+          },
+        },
+        animation: {
+          randomMove: 'randomMove 1s infinite',
+        },
       },
       screens: {
         "xxs": "380px",
@@ -20,24 +31,6 @@ const config: Config = {
         ...defaultTheme.screens
       }
     },
-    plugins: [
-      plugin
-      (function ({ addUtilities, addComponents, e, config })
-      {
-        const newUtilities = {
-          ".horizontal-tb": {
-            writingMode: "horizontal-tb",
-          },
-          ".vertical-rl": {
-            writingMode: "vertical-rl"
-          },
-          ".vertical-lr": {
-            writingMode: "vertical-lr"
-          }
-        };
-        addUtilities(newUtilities);
-      })
-    ],
   }
 ;
 export default config;
