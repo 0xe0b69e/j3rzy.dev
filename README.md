@@ -2,7 +2,7 @@
 
 ### Start command
 ```bash
-docker run -v /mnt:/app/files --env-file ./.env -p 3000:3000 --network="bridge" web
+docker run -p 3000:3000 web
 ```
 ### .env file
 ```env
