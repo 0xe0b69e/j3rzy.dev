@@ -20,7 +20,7 @@ export default function RootLayout ({ children }: Readonly<{ children: React.Rea
 {
   return (
     <html lang="en">
-    <body className="overflow-x-hidden">
+    <body className="overflow-hidden">
     {children}
     </body>
     </html>
