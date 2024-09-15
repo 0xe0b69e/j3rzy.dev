@@ -54,7 +54,7 @@ export default function Home(): JSX.Element {
         style={{ textShadow: "-7px 7px 2px #000" }}
       >Feed the woods</h1>
       <p
-        className="font-serif text-[30px] font-semibold z-20 transition-opacity text-center"
+        className="font-serif text-[30px] font-semibold z-20 transition-opacity text-center text-white"
         style={{
           textShadow: "-3px 3px 1px #000",
           opacity: isFading || isTextHidden ? 0 : 1,
